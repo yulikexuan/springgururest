@@ -1,0 +1,9 @@
+# logging.level.guru.springframework=debug
+logging:
+  level:
+    guru.springframework: debug
+    # org.springframework: debug
+spring:
+  # Pretty-print JSON responses
+  jackson:
+    serialization.INDENT_OUTPUT: true
