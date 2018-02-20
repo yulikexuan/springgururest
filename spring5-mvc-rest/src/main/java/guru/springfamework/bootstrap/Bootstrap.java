@@ -5,8 +5,7 @@ package guru.springfamework.bootstrap;
 
 
 import guru.springfamework.domain.Category;
-import guru.springfamework.domain.repositories.ICategoryRepository;
-import lombok.extern.slf4j.Slf4j;
+import guru.springfamework.repositories.ICategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
