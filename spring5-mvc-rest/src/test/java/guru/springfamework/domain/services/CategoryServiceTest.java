@@ -1,15 +1,15 @@
-//: guru.springfamework.services.CategoryServiceTest.java
+//: guru.springfamework.domain.services.CategoryServiceTest.java
 
 
-package guru.springfamework.services;
+package guru.springfamework.domain.services;
 
 
-import guru.springfamework.api.v1.mapper.ICategoryMapper;
 import guru.springfamework.api.v1.model.CategoryDTO;
-import guru.springfamework.domain.Category;
-import guru.springfamework.repositories.ICategoryRepository;
+import guru.springfamework.domain.model.Category;
+import guru.springfamework.domain.repositories.ICategoryRepository;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 
 public class CategoryServiceTest {
@@ -29,13 +29,12 @@ public class CategoryServiceTest {
 	@Mock
 	private ICategoryRepository categoryRepository;
 
+	@InjectMocks
 	private CategoryService categoryService;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.categoryService = new CategoryService(ICategoryMapper.INSTANCE,
-				this.categoryRepository);
 	}
 
 	@Test
@@ -48,10 +47,10 @@ public class CategoryServiceTest {
 		when(this.categoryRepository.findAll()).thenReturn(categories);
 
 		// When
-		List<CategoryDTO> categoryDTOS = this.categoryService.getAllCategories();
+		List<Category> result = this.categoryService.getAllCategories();
 
 		// Then
-		assertThat(categoryDTOS.size(), is(categories.size()));
+		assertThat(result, contains(categories));
 	}
 
 	@Test
@@ -65,11 +64,12 @@ public class CategoryServiceTest {
 		when(this.categoryRepository.findByName(NAME)).thenReturn(category);
 
 		// When
-		CategoryDTO categoryDTO = this.categoryService.getCategoryByName(NAME);
+		Category result = this.categoryService.getCategoryByName(NAME);
 
 		// Then
-		assertThat(categoryDTO.getId(), is(ID));
-		assertThat(categoryDTO.getName(), is(NAME));
+		assertThat(result.getId(), is(ID));
+		assertThat(result.getName(), is(NAME));
+		assertThat(result, is(category));
 	}
 
 }///:~

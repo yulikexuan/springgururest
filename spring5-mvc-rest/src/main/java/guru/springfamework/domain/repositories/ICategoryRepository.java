@@ -1,10 +1,10 @@
-//: guru.springfamework.repositories.ICategoryRepository.java
+//: guru.springfamework.domain.repositories.ICategoryRepository.java
 
 
-package guru.springfamework.repositories;
+package guru.springfamework.domain.repositories;
 
 
-import guru.springfamework.domain.Category;
+import guru.springfamework.domain.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

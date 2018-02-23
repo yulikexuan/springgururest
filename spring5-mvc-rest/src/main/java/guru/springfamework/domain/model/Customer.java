@@ -1,7 +1,7 @@
-//: guru.springfamework.domain.Category.java
+//: guru.springfamework.domain.model.Customer.java
 
 
-package guru.springfamework.domain;
+package guru.springfamework.domain.model;
 
 
 import lombok.Data;
@@ -14,11 +14,13 @@ import javax.persistence.Id;
 
 @Data
 @Entity
-public class Category {
+public class Customer {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String name;
+
+	private String firstname;
+	private String lastname;
 
 }///:~

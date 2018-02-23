@@ -1,4 +1,4 @@
-//: guru.springfamework.api.v1.model.CategoryListDTO.java
+//: guru.springfamework.api.v1.model.CustomerListDTO.java
 
 
 package guru.springfamework.api.v1.model;
@@ -14,8 +14,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryListDTO {
+public class CustomerListDTO {
 
-	List<CategoryDTO> categories;
+	private List<CustomerDTO> customers;
 
 }///:~

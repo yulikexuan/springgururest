@@ -4,8 +4,10 @@
 package guru.springfamework.bootstrap;
 
 
-import guru.springfamework.domain.Category;
-import guru.springfamework.repositories.ICategoryRepository;
+import guru.springfamework.domain.model.Category;
+import guru.springfamework.domain.model.Customer;
+import guru.springfamework.domain.repositories.ICategoryRepository;
+import guru.springfamework.domain.repositories.ICustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -28,10 +30,13 @@ import org.springframework.stereotype.Component;
 public class Bootstrap implements CommandLineRunner {
 
 	private final ICategoryRepository categoryRepository;
+	private final ICustomerRepository customerRepository;
 
 	@Autowired
-	public Bootstrap(ICategoryRepository categoryRepository) {
+	public Bootstrap(ICategoryRepository categoryRepository,
+	                 ICustomerRepository customerRepository) {
 		this.categoryRepository = categoryRepository;
+		this.customerRepository = customerRepository;
 	}
 
 	/*
@@ -39,6 +44,11 @@ public class Bootstrap implements CommandLineRunner {
 	 */
 	@Override
 	public void run(String... args) {
+		this.loadCategories();
+		this.loadCustomers();
+	}// End of run()
+
+	private void loadCategories() {
 
 		Category fruits = new Category();
 		fruits.setName("Fruits");
@@ -63,7 +73,36 @@ public class Bootstrap implements CommandLineRunner {
 
 		System.out.println(">>>>>>> Categories loaded = " +
 				this.categoryRepository.count());
+	}
 
-	}// End of run()
+	private void loadCustomers() {
+
+		Customer customer1 = new Customer();
+		customer1.setId(1L);
+		customer1.setFirstname("Michale");
+		customer1.setLastname("Weston");
+		this.customerRepository.save(customer1);
+
+		Customer customer2 = new Customer();
+		customer2.setId(2l);
+		customer2.setFirstname("Sam");
+		customer2.setLastname("Axe");
+		this.customerRepository.save(customer2);
+
+		Customer customer3 = new Customer();
+		customer3.setId(3l);
+		customer3.setFirstname("Bill");
+		customer3.setLastname("Gates");
+		this.customerRepository.save(customer3);
+
+		Customer customer4 = new Customer();
+		customer4.setId(4l);
+		customer4.setFirstname("Jobs");
+		customer4.setLastname("Steve");
+		this.customerRepository.save(customer4);
+
+		System.out.println(">>>>>>> Customers Loaded = " +
+				this.customerRepository.count());
+	}
 
 }///:~

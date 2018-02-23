@@ -1,11 +1,11 @@
 //: guru.springfamework.api.v1.mapper.ICategoryMapperTest.java
 
 
-package guru.springfamework.api.v1.mapper;
+package guru.springfamework.api.v1.mappers;
 
 
 import guru.springfamework.api.v1.model.CategoryDTO;
-import guru.springfamework.domain.Category;
+import guru.springfamework.domain.model.Category;
 import org.junit.Before;
 import org.junit.Test;
 
