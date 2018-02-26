@@ -41,7 +41,7 @@ public class CustomerControllerTest {
 	private CustomerController customerController;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 
 		MockitoAnnotations.initMocks(this);
 
@@ -98,7 +98,7 @@ public class CustomerControllerTest {
 		when(this.customerService.getCustomerById(id)).thenReturn(customer);
 
 		// When
-		this.mockMvc.perform(get(Mappings.API_V1_CUSTOMERS + id)
+		this.mockMvc.perform(get(Mappings.API_V1_CUSTOMERS + "/" + id)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.customerUrl",
 						endsWith(Long.toString(id))))

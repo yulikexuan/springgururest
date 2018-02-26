@@ -108,7 +108,7 @@ public class CategoryControllerTest {
 		
 		// Given
         String name = UUID.randomUUID().toString();
-        String uri = Mappings.API_V1_CATEGORIES + name;
+        String uri = Mappings.API_V1_CATEGORIES + "/" + name;
 		Long id = this.random.nextLong();
         Category category = new Category();
         category.setName(name);

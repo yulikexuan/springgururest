@@ -9,12 +9,15 @@ import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.domain.model.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 @Mapper
 public interface ICustomerMapper {
 
 	ICustomerMapper INSTANCE = Mappers.getMapper(ICustomerMapper.class);
+
+	Customer toCustomer(CustomerDTO customerDTO);
 
     default CustomerDTO toCustomerDTO(Customer customer) {
 
@@ -26,7 +29,13 @@ public interface ICustomerMapper {
 
 		customerDTO.setFirstname( customer.getFirstname() );
 		customerDTO.setLastname( customer.getLastname() );
-		customerDTO.setCustomerUrl(Mappings.API_V1_CUSTOMERS + customer.getId());
+
+	    String uriStr = UriComponentsBuilder.newInstance()
+			    .path(Mappings.API_V1_CUSTOMERS)
+			    .path("/")
+			    .path(Long.toString(customer.getId()))
+			    .toUriString();
+		customerDTO.setCustomerUrl(uriStr);
 
 		return customerDTO;
 	}

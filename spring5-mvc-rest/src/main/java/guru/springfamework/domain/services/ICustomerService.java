@@ -12,4 +12,5 @@ import java.util.List;
 public interface ICustomerService {
 	List<Customer> getAllCustomers();
 	Customer getCustomerById(Long id);
+	Customer createNewCustomer(Customer customer);
 }///:~

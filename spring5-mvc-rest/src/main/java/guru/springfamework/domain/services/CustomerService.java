@@ -39,4 +39,10 @@ public class CustomerService implements ICustomerService {
 		return customer;
 	}
 
+	@Override
+	public Customer createNewCustomer(Customer customer) {
+		Customer newCustomer = this.customerRepository.save(customer);
+		return newCustomer;
+	}
+
 }///:~

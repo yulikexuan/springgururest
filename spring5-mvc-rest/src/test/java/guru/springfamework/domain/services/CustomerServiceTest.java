@@ -29,10 +29,12 @@ public class CustomerServiceTest {
 
 	@InjectMocks
 	private CustomerService customerService;
+	private Random random;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
+		this.random = new Random(System.currentTimeMillis());
 	}
 
 	@Test
@@ -56,8 +58,7 @@ public class CustomerServiceTest {
 	public void getCustomerById() {
 
 		// Given
-		Random random = new Random(System.currentTimeMillis());
-		Long id = random.nextLong();
+		Long id = this.random.nextLong();
 		Customer customer = new Customer();
 		customer.setId(id);
 		customer.setFirstname("");
@@ -72,6 +73,29 @@ public class CustomerServiceTest {
 		// Then
 		assertThat(result.getId(), is(id));
 
+	}
+
+	@Test
+	public void able_To_Create_A_New_Customer() {
+
+		// Given
+		Long id = this.random.nextLong();
+		Customer customer = new Customer();
+		customer.setId(id);
+		customer.setFirstname("");
+		customer.setLastname("");
+
+		// Given
+		Customer newCreated = new Customer();
+		customer.setId(id);
+
+		when(this.customerRepository.save(customer)).thenReturn(newCreated);
+
+		// When
+		Customer result = this.customerService.createNewCustomer(customer);
+
+		// Then
+		assertThat(result, is(newCreated));
 	}
 
 }///:~

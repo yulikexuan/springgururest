@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,11 +47,23 @@ public class CustomerController {
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
 		Customer customer = this.customerService.getCustomerById(id);
 		CustomerDTO dto = this.customerMapper.toCustomerDTO(customer);
 		return new ResponseEntity<>(dto, HttpStatus.OK);
+	}
+
+	@PostMapping
+	public ResponseEntity<CustomerDTO> createNewCustomer(
+			@RequestBody CustomerDTO customerDTO) {
+
+		Customer customer = this.customerMapper.toCustomer(customerDTO);
+		Customer newCreated = this.customerService.createNewCustomer(customer);
+		CustomerDTO newCreatedDTO = this.customerMapper.toCustomerDTO(
+				newCreated);
+
+		return new ResponseEntity<>(newCreatedDTO, HttpStatus.CREATED);
 	}
 
 }///:~
