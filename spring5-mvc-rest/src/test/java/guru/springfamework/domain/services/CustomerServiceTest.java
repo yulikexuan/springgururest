@@ -6,22 +6,20 @@ package guru.springfamework.domain.services;
 
 import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.repositories.ICustomerRepository;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import sun.security.tools.keytool.Main;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 
 public class CustomerServiceTest {

@@ -4,7 +4,6 @@
 package guru.springfamework.domain.services;
 
 
-import guru.springfamework.api.v1.model.CategoryDTO;
 import guru.springfamework.domain.model.Category;
 import guru.springfamework.domain.repositories.ICategoryRepository;
 import org.junit.Before;
@@ -16,7 +15,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +50,10 @@ public class CategoryServiceTest {
 		List<Category> result = this.categoryService.getAllCategories();
 
 		// Then
-		assertThat(result, contains(categories));
+		assertThat(result.size(), is(3));
+		assertThat(result.get(0), is(categories.get(0)));
+		assertThat(result.get(1), is(categories.get(1)));
+		assertThat(result.get(2), is(categories.get(2)));
 	}
 
 	@Test
