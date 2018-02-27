@@ -6,6 +6,8 @@ package guru.springfamework.api.v1.controllers;
 
 import guru.springfamework.api.Mappings;
 import guru.springfamework.api.v1.mappers.ICustomerMapper;
+import guru.springfamework.api.v1.mappers.ObjectToJsonMapper;
+import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.services.ICustomerService;
 import org.junit.Before;
@@ -15,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +26,7 @@ import java.util.Random;
 import static org.hamcrest.Matchers.*;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -104,6 +107,47 @@ public class CustomerControllerTest {
 						endsWith(Long.toString(id))))
 				.andExpect(jsonPath("$.customerUrl",
 						startsWith(Mappings.API_V1_CUSTOMERS)));
+	}
+
+	@Test
+	public void able_To_Handle_Post_Of_New_Customer() throws Exception {
+
+		// Given
+		String firstname = "Jobs";
+		String lastname = "Steve";
+		CustomerDTO input = new CustomerDTO();
+		input.setFirstname(firstname);
+		input.setLastname(lastname);
+
+		String rawInput = ObjectToJsonMapper.toJson(input);
+
+		Customer inputCustomer = new Customer();
+		inputCustomer.setFirstname(firstname);
+		inputCustomer.setLastname(lastname);
+
+		Long id = this.random.nextLong();
+		Customer savedCustomer = new Customer();
+		savedCustomer.setId(id);
+		savedCustomer.setFirstname(firstname);
+		savedCustomer.setLastname(lastname);
+
+		when(this.customerService.createNewCustomer(inputCustomer))
+				.thenReturn(savedCustomer);
+
+		String uriStr = UriComponentsBuilder.newInstance()
+				.path(Mappings.API_V1_CUSTOMERS)
+				.path("/")
+				.path(Long.toString(id))
+				.toUriString();
+
+		// When & Then
+		mockMvc.perform(post(Mappings.API_V1_CUSTOMERS)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(rawInput))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.firstname", is(firstname)))
+				.andExpect(jsonPath("$.lastname", is(lastname)))
+				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
 	}
 
 }///:~

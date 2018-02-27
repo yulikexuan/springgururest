@@ -12,10 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -96,6 +93,32 @@ public class CustomerServiceTest {
 
 		// Then
 		assertThat(result, is(newCreated));
+	}
+
+	@Test
+	public void able_To_Save_A_New_Customer_Into_Database() {
+
+		// Given
+		Customer customer = new Customer();
+		customer.setFirstname(UUID.randomUUID().toString());
+		customer.setLastname(UUID.randomUUID().toString());
+
+		Customer savedCustomer = new Customer();
+
+		Long id = this.random.nextLong();
+		savedCustomer.setId(id);
+		savedCustomer.setFirstname(customer.getFirstname());
+		savedCustomer.setLastname(customer.getLastname());
+
+		when(this.customerRepository.save(customer)).thenReturn(savedCustomer);
+
+		// When
+		Customer result = this.customerService.createNewCustomer(customer);
+
+		// Then
+		assertThat(result.getId(), is(id));
+		assertThat(result.getFirstname(), is(customer.getFirstname()));
+		assertThat(result.getLastname(), is(customer.getLastname()));
 	}
 
 }///:~
