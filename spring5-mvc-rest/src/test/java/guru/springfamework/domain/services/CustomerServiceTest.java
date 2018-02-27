@@ -121,4 +121,44 @@ public class CustomerServiceTest {
 		assertThat(result.getLastname(), is(customer.getLastname()));
 	}
 
+	@Test
+	public void able_To_Update_An_Existing_Customer() {
+
+		// Given
+		Long id = this.random.nextLong();
+		Customer customer = new Customer();
+		customer.setId(id);
+		customer.setFirstname(UUID.randomUUID().toString());
+		customer.setLastname(UUID.randomUUID().toString());
+
+		when(this.customerRepository.existsById(id)).thenReturn(true);
+
+		Customer savedCustomer = new Customer();
+		savedCustomer.setId(customer.getId());
+		savedCustomer.setFirstname(customer.getFirstname());
+		savedCustomer.setLastname(customer.getLastname());
+
+		when(this.customerRepository.save(customer)).thenReturn(savedCustomer);
+
+		// When
+		Customer result = this.customerService.updateCustomer(customer);
+
+		// Then
+		assertThat(result, is(savedCustomer));
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void id_Should_Exist_In_Repository_When_Updating() {
+
+		// Given
+		Long id = this.random.nextLong();
+		Customer customer = new Customer();
+		customer.setId(id);
+
+		when(this.customerRepository.existsById(id)).thenReturn(false);
+
+		// When
+		this.customerService.updateCustomer(customer);
+	}
+
 }///:~

@@ -16,6 +16,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -141,13 +144,65 @@ public class CustomerControllerTest {
 				.toUriString();
 
 		// When & Then
-		mockMvc.perform(post(Mappings.API_V1_CUSTOMERS)
+		MockHttpServletRequestBuilder requestBuilder =
+				MockMvcRequestBuilders.post(Mappings.API_V1_CUSTOMERS)
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(rawInput))
-				.andExpect(status().isCreated())
+						.content(rawInput);
+
+		ResultActions resultActions = this.mockMvc.perform(requestBuilder);
+
+		resultActions.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.firstname", is(firstname)))
 				.andExpect(jsonPath("$.lastname", is(lastname)))
 				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
-	}
+
+	}// able_To_Handle_Post_Of_New_Customer()
+
+	@Test
+	public void able_To_Handle_Put_Of_Existing_Customer() throws Exception {
+
+		// Given
+		Long id = this.random.nextLong();
+		String uriStr = UriComponentsBuilder.newInstance()
+				.path(Mappings.API_V1_CUSTOMERS)
+				.path("/")
+				.path(Long.toString(id))
+				.toUriString();
+
+		String firstname = "Jobs";
+		String lastname = "Steve";
+		CustomerDTO input = new CustomerDTO();
+		input.setFirstname(firstname);
+		input.setLastname(lastname);
+
+		String rawInput = ObjectToJsonMapper.toJson(input);
+
+		Customer before = new Customer();
+		before.setId(id);
+		before.setFirstname(input.getFirstname());
+		before.setLastname(input.getLastname());
+
+		Customer after = new Customer();
+		after.setId(before.getId());
+		after.setFirstname(before.getFirstname());
+		after.setLastname(before.getLastname());
+
+		when(this.customerService.updateCustomer(before)).thenReturn(after);
+
+		// When & Then
+		MockHttpServletRequestBuilder requestBuilder =
+				MockMvcRequestBuilders.put(uriStr)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(rawInput);
+
+		ResultActions resultActions = this.mockMvc.perform(requestBuilder);
+
+		resultActions.andExpect(status().isOk())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.firstname", is(firstname)))
+				.andExpect(jsonPath("$.lastname", is(lastname)))
+				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
+
+	}// able_To_Handle_Put_Of_Existing_Customer()
 
 }///:~

@@ -45,4 +45,18 @@ public class CustomerService implements ICustomerService {
 		return newCustomer;
 	}
 
+	@Override
+	public Customer updateCustomer(Customer customer) {
+
+		Long id = customer.getId();
+
+		if (!this.customerRepository.existsById(id)) {
+			String err = ">>>>>>> Customer Id not found! " + id;
+			log.debug(err);
+			throw new RuntimeException(err);
+		}
+
+		return this.customerRepository.save(customer);
+	}
+
 }///:~
