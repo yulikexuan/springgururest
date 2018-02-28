@@ -198,9 +198,52 @@ public class CustomerControllerTest {
 		ResultActions resultActions = this.mockMvc.perform(requestBuilder);
 
 		resultActions.andExpect(status().isOk())
-				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.firstname", is(firstname)))
 				.andExpect(jsonPath("$.lastname", is(lastname)))
+				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
+
+	}// able_To_Handle_Put_Of_Existing_Customer()
+
+	@Test
+	public void able_To_Handle_Patch_Of_Existing_Customer() throws Exception {
+
+		// Given
+		Long id = this.random.nextLong();
+		String uriStr = UriComponentsBuilder.newInstance()
+				.path(Mappings.API_V1_CUSTOMERS)
+				.path("/")
+				.path(Long.toString(id))
+				.toUriString();
+
+		String firstname = "Mike";
+		CustomerDTO input = new CustomerDTO();
+		input.setFirstname(firstname);
+
+		String rawInput = ObjectToJsonMapper.toJson(input);
+
+		String originLastname = "Steve";
+		Customer before = new Customer();
+		before.setId(id);
+		before.setFirstname(firstname);
+
+		Customer after = new Customer();
+		after.setId(before.getId());
+		after.setFirstname(firstname);
+		after.setLastname(originLastname);
+
+		when(this.customerService.patchCustomer(before)).thenReturn(after);
+
+		// When & Then
+		MockHttpServletRequestBuilder requestBuilder =
+				MockMvcRequestBuilders.patch(uriStr)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(rawInput);
+
+		ResultActions resultActions = this.mockMvc.perform(requestBuilder);
+
+		resultActions.andExpect(status().isOk())
+				.andExpect(jsonPath("$.firstname", is(firstname)))
+				.andExpect(jsonPath("$.lastname", is(originLastname)))
 				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
 
 	}// able_To_Handle_Put_Of_Existing_Customer()

@@ -81,18 +81,52 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
+			<!--
+				By default, the Failsafe Plugin will automatically include all
+				test classes with the following wildcard patterns:
+				"**/IT*.java" - includes all of its subdirectories and all java
+				                filenames that start with "IT"
+				"**/*IT.java" - includes all of its subdirectories and all java
+				                filenames that end with "IT"
+				"**/*ITCase.java" - includes all of its subdirectories and all
+				                java filenames that end with "ITCase".
+			-->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
 				<configuration>
-					<formats>
-						<format>html</format>
-						<format>xml</format>
-					</formats>
-					<check/>
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
+					<additionalClasspathElements>
+						<additionalClasspathElement>
+							${basedir}/target/classes
+						</additionalClasspathElement>
+					</additionalClasspathElements>
+					<parallel>none</parallel>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
+
+			<!--<plugin>-->
+				<!--<groupId>org.codehaus.mojo</groupId>-->
+				<!--<artifactId>cobertura-maven-plugin</artifactId>-->
+				<!--<version>2.7</version>-->
+				<!--<configuration>-->
+					<!--<formats>-->
+						<!--<format>html</format>-->
+						<!--<format>xml</format>-->
+					<!--</formats>-->
+					<!--<check/>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

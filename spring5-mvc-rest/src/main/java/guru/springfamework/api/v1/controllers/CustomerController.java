@@ -80,4 +80,18 @@ public class CustomerController {
 				HttpStatus.OK);
 	}
 
+	@PatchMapping("/{id}")
+	public ResponseEntity<CustomerDTO> patchCustomer(
+			@PathVariable Long id,
+			@RequestBody CustomerDTO customerDTO) {
+
+		Customer input = this.customerMapper.toCustomer(customerDTO);
+		input.setId(id);
+
+		Customer patched = this.customerService.patchCustomer(input);
+
+		return new ResponseEntity<>(this.customerMapper.toCustomerDTO(patched),
+				HttpStatus.OK);
+	}
+
 }///:~
