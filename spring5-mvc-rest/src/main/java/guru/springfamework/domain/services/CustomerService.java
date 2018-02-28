@@ -82,4 +82,12 @@ public class CustomerService implements ICustomerService {
 		});
 	}
 
+	@Override
+	public void deleteCustomer(Long id) {
+		if (id == null) {
+			return;
+		}
+		this.customerRepository.deleteById(id);
+	}
+
 }///:~

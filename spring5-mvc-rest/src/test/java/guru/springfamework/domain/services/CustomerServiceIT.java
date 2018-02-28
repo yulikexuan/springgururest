@@ -99,4 +99,18 @@ public class CustomerServiceIT {
 		assertThat(output.getLastname(), is(input.getLastname()));
 	}
 
+	@Test
+	public void able_To_Delete_Customer_By_Id() {
+
+		// Given
+		Long id = this.get_ID_Of_The_First_Customer_In_Cuatomer_Repository();
+
+		// When
+		this.customerService.deleteCustomer(id);
+
+		// Then
+		boolean deleted = !this.customerRepository.existsById(id);
+		assertThat(deleted, is(true));
+	}
+
 }///:~

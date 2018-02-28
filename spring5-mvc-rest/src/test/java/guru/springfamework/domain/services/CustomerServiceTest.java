@@ -201,4 +201,18 @@ public class CustomerServiceTest {
 		verify(this.customerRepository, never()).findById(anyLong());
 	}
 
+	@Test
+	public void able_Delete_An_Customer_By_Id() {
+
+		// Given
+
+
+		// When
+		this.customerService.deleteCustomer(this.id);
+
+		// Then
+		verify(this.customerRepository).deleteById(this.id);
+
+	}
+
 }///:~

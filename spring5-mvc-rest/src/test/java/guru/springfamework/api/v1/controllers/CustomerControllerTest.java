@@ -248,4 +248,24 @@ public class CustomerControllerTest {
 
 	}// able_To_Handle_Put_Of_Existing_Customer()
 
+	@Test
+	public void able_To_Handle_Delete() throws Exception {
+
+		// Given
+		Long id = this.random.nextLong();
+		String uriStr = UriComponentsBuilder.newInstance()
+				.path(Mappings.API_V1_CUSTOMERS)
+				.path("/")
+				.path(Long.toString(id))
+				.toUriString();
+
+		// When
+		MockHttpServletRequestBuilder requestBuilder =
+				MockMvcRequestBuilders.delete(uriStr);
+
+		ResultActions requestActions = this.mockMvc.perform(requestBuilder);
+
+		requestActions.andExpect(status().isOk());
+	}
+
 }///:~
