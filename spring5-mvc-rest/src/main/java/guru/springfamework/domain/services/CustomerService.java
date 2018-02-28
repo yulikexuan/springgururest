@@ -59,4 +59,27 @@ public class CustomerService implements ICustomerService {
 		return this.customerRepository.save(customer);
 	}
 
+	@Override
+	public Customer patchCustomer(Customer customer) {
+
+		if (customer == null) {
+			return customer;
+		}
+
+		Long id = customer.getId();
+
+		return this.customerRepository.findById(id).map(existing -> {
+			if (customer.getFirstname() != null) {
+				existing.setFirstname(customer.getFirstname());
+			} else if (customer.getLastname() != null) {
+				existing.setLastname(customer.getLastname());
+			}
+			return this.customerRepository.save(existing);
+		}).orElseThrow(() -> {
+			String error = ">>>>>>> Customer does not exist: " + id;
+			log.debug(error);
+			return new RuntimeException(error);
+		});
+	}
+
 }///:~

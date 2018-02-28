@@ -16,6 +16,9 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -27,11 +30,13 @@ public class CustomerServiceTest {
 	@InjectMocks
 	private CustomerService customerService;
 	private Random random;
+	private Long id;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		this.random = new Random(System.currentTimeMillis());
+		this.id = this.random.nextLong();
 	}
 
 	@Test
@@ -55,20 +60,19 @@ public class CustomerServiceTest {
 	public void getCustomerById() {
 
 		// Given
-		Long id = this.random.nextLong();
 		Customer customer = new Customer();
-		customer.setId(id);
+		customer.setId(this.id);
 		customer.setFirstname("");
 		customer.setLastname("");
 
-		when(this.customerRepository.findById(id)).thenReturn(
+		when(this.customerRepository.findById(this.id)).thenReturn(
 				Optional.of(customer));
 
 		// When
-		Customer result = this.customerService.getCustomerById(id);
+		Customer result = this.customerService.getCustomerById(this.id);
 
 		// Then
-		assertThat(result.getId(), is(id));
+		assertThat(result.getId(), is(this.id));
 
 	}
 
@@ -76,15 +80,14 @@ public class CustomerServiceTest {
 	public void able_To_Create_A_New_Customer() {
 
 		// Given
-		Long id = this.random.nextLong();
 		Customer customer = new Customer();
-		customer.setId(id);
+		customer.setId(this.id);
 		customer.setFirstname("");
 		customer.setLastname("");
 
 		// Given
 		Customer newCreated = new Customer();
-		customer.setId(id);
+		customer.setId(this.id);
 
 		when(this.customerRepository.save(customer)).thenReturn(newCreated);
 
@@ -105,8 +108,7 @@ public class CustomerServiceTest {
 
 		Customer savedCustomer = new Customer();
 
-		Long id = this.random.nextLong();
-		savedCustomer.setId(id);
+		savedCustomer.setId(this.id);
 		savedCustomer.setFirstname(customer.getFirstname());
 		savedCustomer.setLastname(customer.getLastname());
 
@@ -116,7 +118,7 @@ public class CustomerServiceTest {
 		Customer result = this.customerService.createNewCustomer(customer);
 
 		// Then
-		assertThat(result.getId(), is(id));
+		assertThat(result.getId(), is(this.id));
 		assertThat(result.getFirstname(), is(customer.getFirstname()));
 		assertThat(result.getLastname(), is(customer.getLastname()));
 	}
@@ -125,13 +127,12 @@ public class CustomerServiceTest {
 	public void able_To_Update_An_Existing_Customer() {
 
 		// Given
-		Long id = this.random.nextLong();
 		Customer customer = new Customer();
-		customer.setId(id);
+		customer.setId(this.id);
 		customer.setFirstname(UUID.randomUUID().toString());
 		customer.setLastname(UUID.randomUUID().toString());
 
-		when(this.customerRepository.existsById(id)).thenReturn(true);
+		when(this.customerRepository.existsById(this.id)).thenReturn(true);
 
 		Customer savedCustomer = new Customer();
 		savedCustomer.setId(customer.getId());
@@ -151,14 +152,53 @@ public class CustomerServiceTest {
 	public void id_Should_Exist_In_Repository_When_Updating() {
 
 		// Given
-		Long id = this.random.nextLong();
 		Customer customer = new Customer();
-		customer.setId(id);
+		customer.setId(this.id);
 
-		when(this.customerRepository.existsById(id)).thenReturn(false);
+		when(this.customerRepository.existsById(this.id)).thenReturn(false);
 
 		// When
 		this.customerService.updateCustomer(customer);
+	}
+
+	@Test
+	public void able_To_Patch_An_Existing_Customer_With_First_Name() {
+
+		// Given
+		Customer input = new Customer();
+		input.setId(this.id);
+		String firstname = UUID.randomUUID().toString();
+		input.setFirstname(firstname);
+
+		Customer existing = new Customer();
+		existing.setId(this.id);
+		String originalFirstname = UUID.randomUUID().toString();
+		String originalLastname = UUID.randomUUID().toString();
+		existing.setFirstname(originalFirstname);
+		existing.setLastname(originalLastname);
+
+		when(this.customerRepository.findById(this.id))
+				.thenReturn(Optional.of(existing));
+
+		when(this.customerRepository.save(existing)).thenReturn(existing);
+
+		// When
+		Customer result = this.customerService.patchCustomer(input);
+
+		// Then
+		assertThat(result, is(existing));
+		assertThat(existing.getId(), is(input.getId()));
+		assertThat(existing.getFirstname(), is(input.getFirstname()));
+	}
+
+	@Test
+	public void not_Able_To_Patch_Null() {
+
+		// When
+		this.customerService.patchCustomer(null);
+
+		// Then
+		verify(this.customerRepository, never()).findById(anyLong());
 	}
 
 }///:~

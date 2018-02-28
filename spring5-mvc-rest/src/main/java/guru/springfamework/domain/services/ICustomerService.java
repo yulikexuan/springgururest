@@ -14,4 +14,5 @@ public interface ICustomerService {
 	Customer getCustomerById(Long id);
 	Customer createNewCustomer(Customer customer);
 	Customer updateCustomer(Customer customer);
+	Customer patchCustomer(Customer customer);
 }///:~
