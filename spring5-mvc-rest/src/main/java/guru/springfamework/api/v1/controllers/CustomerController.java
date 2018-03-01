@@ -5,10 +5,8 @@ package guru.springfamework.api.v1.controllers;
 
 
 import guru.springfamework.api.Mappings;
-import guru.springfamework.api.v1.mappers.ICustomerMapper;
 import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.api.v1.model.CustomerListDTO;
-import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.services.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Controller
@@ -25,44 +22,30 @@ import java.util.stream.Collectors;
 public class CustomerController {
 
 	private final ICustomerService customerService;
-	private final ICustomerMapper customerMapper;
-
 
 	@Autowired
-	public CustomerController(ICustomerService customerService,
-	                          ICustomerMapper customerMapper) {
+	public CustomerController(ICustomerService customerService) {
 		this.customerService = customerService;
-		this.customerMapper = customerMapper;
 	}
 
 	@GetMapping
 	public ResponseEntity<CustomerListDTO> getAllCustomers() {
-
-		List<Customer> customers = this.customerService.getAllCustomers();
-		List<CustomerDTO> cdtos = customers.stream()
-				.map(this.customerMapper::toCustomerDTO)
-				.collect(Collectors.toList());
-		CustomerListDTO dto = new CustomerListDTO(cdtos);
-
+		List<CustomerDTO> customers = this.customerService.getAllCustomers();
+		CustomerListDTO dto = new CustomerListDTO(customers);
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
-		Customer customer = this.customerService.getCustomerById(id);
-		CustomerDTO dto = this.customerMapper.toCustomerDTO(customer);
-		return new ResponseEntity<>(dto, HttpStatus.OK);
+		CustomerDTO customer = this.customerService.getCustomerById(id);
+		return new ResponseEntity<>(customer, HttpStatus.OK);
 	}
 
 	@PostMapping
 	public ResponseEntity<CustomerDTO> createNewCustomer(
 			@RequestBody CustomerDTO customerDTO) {
-
-		Customer customer = this.customerMapper.toCustomer(customerDTO);
-		Customer newCreated = this.customerService.createNewCustomer(customer);
-		CustomerDTO newCreatedDTO = this.customerMapper.toCustomerDTO(
-				newCreated);
-
+		CustomerDTO newCreatedDTO = this.customerService.createNewCustomer(
+				customerDTO);
 		return new ResponseEntity<>(newCreatedDTO, HttpStatus.CREATED);
 	}
 
@@ -71,13 +54,10 @@ public class CustomerController {
 			@PathVariable Long id,
 	        @RequestBody CustomerDTO customerDTO) {
 
-		Customer input = this.customerMapper.toCustomer(customerDTO);
-		input.setId(id);
+		CustomerDTO updated = this.customerService.updateCustomer(id,
+				customerDTO);
 
-		Customer updated = this.customerService.updateCustomer(input);
-
-		return new ResponseEntity<>(this.customerMapper.toCustomerDTO(updated),
-				HttpStatus.OK);
+		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}
 
 	@PatchMapping("/{id}")
@@ -85,13 +65,9 @@ public class CustomerController {
 			@PathVariable Long id,
 			@RequestBody CustomerDTO customerDTO) {
 
-		Customer input = this.customerMapper.toCustomer(customerDTO);
-		input.setId(id);
-
-		Customer patched = this.customerService.patchCustomer(input);
-
-		return new ResponseEntity<>(this.customerMapper.toCustomerDTO(patched),
-				HttpStatus.OK);
+		CustomerDTO patched = this.customerService.patchCustomer(id,
+				customerDTO);
+		return new ResponseEntity<>(patched, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")

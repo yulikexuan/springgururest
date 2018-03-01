@@ -4,16 +4,16 @@
 package guru.springfamework.domain.services;
 
 
-import guru.springfamework.domain.model.Customer;
+import guru.springfamework.api.v1.model.CustomerDTO;
 
 import java.util.List;
 
 
 public interface ICustomerService {
-	List<Customer> getAllCustomers();
-	Customer getCustomerById(Long id);
-	Customer createNewCustomer(Customer customer);
-	Customer updateCustomer(Customer customer);
-	Customer patchCustomer(Customer customer);
+	List<CustomerDTO> getAllCustomers();
+	CustomerDTO getCustomerById(Long id);
+	CustomerDTO createNewCustomer(CustomerDTO customerDTO);
+	CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO);
+	CustomerDTO patchCustomer(Long id, CustomerDTO customerDTO);
 	void deleteCustomer(Long id);
 }///:~

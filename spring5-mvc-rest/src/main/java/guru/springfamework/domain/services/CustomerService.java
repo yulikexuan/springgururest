@@ -4,6 +4,8 @@
 package guru.springfamework.domain.services;
 
 
+import guru.springfamework.api.v1.mappers.ICustomerMapper;
+import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.repositories.ICustomerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -18,37 +21,41 @@ import java.util.List;
 public class CustomerService implements ICustomerService {
 
 	private final ICustomerRepository customerRepository;
+	private final ICustomerMapper customerMapper;
 
 	@Autowired
-	public CustomerService(ICustomerRepository customerRepository) {
+	public CustomerService(ICustomerRepository customerRepository,
+	                       ICustomerMapper customerMapper) {
 		this.customerRepository = customerRepository;
+		this.customerMapper = customerMapper;
 	}
 
 	@Override
-	public List<Customer> getAllCustomers() {
-		return this.customerRepository.findAll();
+	public List<CustomerDTO> getAllCustomers() {
+		return this.customerRepository.findAll().stream()
+				.map(this.customerMapper::toCustomerDTO)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public Customer getCustomerById(Long id) {
+	public CustomerDTO getCustomerById(Long id) {
 
 		Customer customer = this.customerRepository
 				.findById(id)
 				.orElseThrow(RuntimeException::new);
 
-		return customer;
+		return this.customerMapper.toCustomerDTO(customer);
 	}
 
 	@Override
-	public Customer createNewCustomer(Customer customer) {
+	public CustomerDTO createNewCustomer(CustomerDTO customerDTO) {
+		Customer customer = this.customerMapper.toCustomer(customerDTO);
 		Customer newCustomer = this.customerRepository.save(customer);
-		return newCustomer;
+		return this.customerMapper.toCustomerDTO(newCustomer);
 	}
 
 	@Override
-	public Customer updateCustomer(Customer customer) {
-
-		Long id = customer.getId();
+	public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
 
 		if (!this.customerRepository.existsById(id)) {
 			String err = ">>>>>>> Customer Id not found! " + id;
@@ -56,23 +63,25 @@ public class CustomerService implements ICustomerService {
 			throw new RuntimeException(err);
 		}
 
-		return this.customerRepository.save(customer);
+		Customer input = this.customerMapper.toCustomer(customerDTO);
+		input.setId(id);
+		Customer saved = this.customerRepository.save(input);
+
+		return this.customerMapper.toCustomerDTO(saved);
 	}
 
 	@Override
-	public Customer patchCustomer(Customer customer) {
+	public CustomerDTO patchCustomer(Long id, CustomerDTO customerDTO) {
 
-		if (customer == null) {
-			return customer;
+		if ((id == null) || (customerDTO == null)) {
+			return null;
 		}
 
-		Long id = customer.getId();
-
-		return this.customerRepository.findById(id).map(existing -> {
-			if (customer.getFirstname() != null) {
-				existing.setFirstname(customer.getFirstname());
-			} else if (customer.getLastname() != null) {
-				existing.setLastname(customer.getLastname());
+		Customer target = this.customerRepository.findById(id).map(existing -> {
+			if (customerDTO.getFirstname() != null) {
+				existing.setFirstname(customerDTO.getFirstname());
+			} else if (customerDTO.getLastname() != null) {
+				existing.setLastname(customerDTO.getLastname());
 			}
 			return this.customerRepository.save(existing);
 		}).orElseThrow(() -> {
@@ -80,6 +89,8 @@ public class CustomerService implements ICustomerService {
 			log.debug(error);
 			return new RuntimeException(error);
 		});
+
+		return this.customerMapper.toCustomerDTO(target);
 	}
 
 	@Override

@@ -36,13 +36,11 @@ public class CategoryControllerTest {
 	@Mock
 	private ICategoryService categoryService;
 
-	private ICategoryMapper categoryMapper = ICategoryMapper.INSTANCE;
-
 	/*
 	 * @InjectMocks creates an instance of the class and injects the mocks that
 	 * are created with the @Mock (or @Spy) annotations into this instance
 	 */
-	//@InjectMocks
+	@InjectMocks
 	private CategoryController categoryController;
 
 	private Random random;
@@ -60,9 +58,6 @@ public class CategoryControllerTest {
 
 		MockitoAnnotations.initMocks(this);
 
-		this.categoryController = new CategoryController(this.categoryService,
-				this.categoryMapper);
-
 		this.random = new Random(System.currentTimeMillis());
 		this.mockMvc = MockMvcBuilders.standaloneSetup(
 				this.categoryController).build();
@@ -78,16 +73,17 @@ public class CategoryControllerTest {
 	public void has_Endpoint_For_All_Categories() throws Exception {
 
 		// Given
-		Category category_0 = new Category();
-		Category category_1 = new Category();
+		CategoryDTO category_0 = CategoryDTO.CategoryDTOBuilder.getInstance()
+				.setId(this.id_0)
+				.setName(this.name_0)
+				.createCategoryDTO();
 
-		category_0.setId(this.id_0);
-		category_0.setName(this.name_0);
+		CategoryDTO category_1 = CategoryDTO.CategoryDTOBuilder.getInstance()
+				.setId(this.id_1)
+				.setName(this.name_1)
+				.createCategoryDTO();
 
-		category_1.setId(this.id_1);
-		category_1.setName(this.name_1);
-
-		List<Category> categories = Arrays.asList(category_0, category_1);
+		List<CategoryDTO> categories = Arrays.asList(category_0, category_1);
 
 		when(this.categoryService.getAllCategories()).thenReturn(categories);
 
@@ -107,12 +103,14 @@ public class CategoryControllerTest {
 	public void has_Endpoint_For_Category_By_Name() throws Exception {
 		
 		// Given
-        String name = UUID.randomUUID().toString();
+        String name = this.name_0;
         String uri = Mappings.API_V1_CATEGORIES + "/" + name;
-		Long id = this.random.nextLong();
-        Category category = new Category();
-        category.setName(name);
-        category.setId(id);
+		Long id = this.id_0;
+
+		CategoryDTO category = CategoryDTO.CategoryDTOBuilder.getInstance()
+				.setId(id)
+				.setName(name)
+				.createCategoryDTO();
 
         when(this.categoryService.getCategoryByName(name)).thenReturn(category);
 

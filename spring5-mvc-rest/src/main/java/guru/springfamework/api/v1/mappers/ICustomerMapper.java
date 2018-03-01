@@ -25,19 +25,19 @@ public interface ICustomerMapper {
 			return null;
 		}
 
-		CustomerDTO customerDTO = new CustomerDTO();
+		Long id = customer.getId();
+		String uri = (id == null) ? null :
+				UriComponentsBuilder.newInstance()
+						.path(Mappings.API_V1_CUSTOMERS)
+						.path("/")
+						.path(Long.toString(id))
+						.toUriString();
 
-		customerDTO.setFirstname( customer.getFirstname() );
-		customerDTO.setLastname( customer.getLastname() );
-
-	    String uriStr = UriComponentsBuilder.newInstance()
-			    .path(Mappings.API_V1_CUSTOMERS)
-			    .path("/")
-			    .path(Long.toString(customer.getId()))
-			    .toUriString();
-		customerDTO.setCustomerUrl(uriStr);
-
-		return customerDTO;
+	    return CustomerDTO.CustomerDTOBuilder.getInstance()
+			    .setFirstname(customer.getFirstname())
+			    .setLastname(customer.getLastname())
+			    .setCustomerUrl(uri)
+			    .createCustomerDTO();
 	}
 
 }///:~

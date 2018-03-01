@@ -4,6 +4,8 @@
 package guru.springfamework.domain.services;
 
 
+import guru.springfamework.api.v1.mappers.ICategoryMapper;
+import guru.springfamework.api.v1.model.CategoryDTO;
 import guru.springfamework.domain.model.Category;
 import guru.springfamework.domain.repositories.ICategoryRepository;
 import org.junit.Before;
@@ -29,12 +31,15 @@ public class CategoryServiceTest {
 	@Mock
 	private ICategoryRepository categoryRepository;
 
-	@InjectMocks
+	private ICategoryMapper categoryMapper = ICategoryMapper.INSTANCE;
+
 	private CategoryService categoryService;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
+		this.categoryService = new CategoryService(this.categoryRepository,
+				this.categoryMapper);
 	}
 
 	@Test
@@ -47,13 +52,10 @@ public class CategoryServiceTest {
 		when(this.categoryRepository.findAll()).thenReturn(categories);
 
 		// When
-		List<Category> result = this.categoryService.getAllCategories();
+		List<CategoryDTO> result = this.categoryService.getAllCategories();
 
 		// Then
 		assertThat(result.size(), is(3));
-		assertThat(result.get(0), is(categories.get(0)));
-		assertThat(result.get(1), is(categories.get(1)));
-		assertThat(result.get(2), is(categories.get(2)));
 	}
 
 	@Test
@@ -67,12 +69,11 @@ public class CategoryServiceTest {
 		when(this.categoryRepository.findByName(NAME)).thenReturn(category);
 
 		// When
-		Category result = this.categoryService.getCategoryByName(NAME);
+		CategoryDTO result = this.categoryService.getCategoryByName(NAME);
 
 		// Then
 		assertThat(result.getId(), is(ID));
 		assertThat(result.getName(), is(NAME));
-		assertThat(result, is(category));
 	}
 
 }///:~

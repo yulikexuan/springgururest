@@ -4,6 +4,8 @@
 package guru.springfamework.domain.services;
 
 
+import guru.springfamework.api.v1.mappers.ICustomerMapper;
+import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.bootstrap.Bootstrap;
 import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.repositories.ICategoryRepository;
@@ -16,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Random;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -35,9 +37,10 @@ public class CustomerServiceIT {
 	private ICategoryRepository categoryRepository;
 
 	private CustomerService customerService;
+	private ICustomerMapper customerMapper;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 
 		log.debug(">>>>>>> Customer data size: " +
 				this.customerRepository.findAll().size());
@@ -48,7 +51,9 @@ public class CustomerServiceIT {
 		log.debug(">>>>>>> Customer data size after loading data: " +
 				this.customerRepository.findAll().size());
 
-		this.customerService = new CustomerService(this.customerRepository);
+		this.customerMapper = ICustomerMapper.INSTANCE;
+		this.customerService = new CustomerService(this.customerRepository,
+				this.customerMapper);
 	}
 
 	private Long get_ID_Of_The_First_Customer_In_Cuatomer_Repository() {
@@ -61,19 +66,21 @@ public class CustomerServiceIT {
 		// Given
 		String newFirstname = UUID.randomUUID().toString();
 		Long id = this.get_ID_Of_The_First_Customer_In_Cuatomer_Repository();
+
 		Customer origin = this.customerRepository.getOne(id);
 		String originLastname = origin.getLastname();
 
-		Customer input = new Customer();
-		input.setId(id);
-		input.setFirstname(newFirstname);
+		Customer customer = new Customer();
+		customer.setId(id);
+		customer.setFirstname(newFirstname);
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
 		// When
-		Customer output = this.customerService.patchCustomer(input);
+		CustomerDTO output = this.customerService.patchCustomer(id, input);
 
 		// Then
-		assertThat(output.getId(), is(id));
-		assertThat(output.getFirstname(), is(input.getFirstname()));
+		assertThat(output.getCustomerUrl(), containsString("/" + id));
+		assertThat(output.getFirstname(), is(customer.getFirstname()));
 		assertThat(output.getLastname(), is(originLastname));
 	}
 
@@ -86,15 +93,16 @@ public class CustomerServiceIT {
 		Customer origin = this.customerRepository.getOne(id);
 		String originFirstname = origin.getFirstname();
 
-		Customer input = new Customer();
-		input.setId(id);
-		input.setLastname(newLastname);
+		Customer customer = new Customer();
+		customer.setId(id);
+		customer.setLastname(newLastname);
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
 		// When
-		Customer output = this.customerService.patchCustomer(input);
+		CustomerDTO output = this.customerService.patchCustomer(id, input);
 
 		// Then
-		assertThat(output.getId(), is(id));
+		assertThat(output.getCustomerUrl(), containsString("/" + id));
 		assertThat(output.getFirstname(), is(originFirstname));
 		assertThat(output.getLastname(), is(input.getLastname()));
 	}

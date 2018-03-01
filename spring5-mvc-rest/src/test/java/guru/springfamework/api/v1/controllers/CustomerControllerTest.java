@@ -12,6 +12,7 @@ import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.services.ICustomerService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
@@ -40,11 +41,13 @@ public class CustomerControllerTest {
 	private ICustomerService customerService;
 
 	private ICustomerMapper customerMapper;
-
 	private MockMvc mockMvc;
 	private Random random;
 
+	@InjectMocks
 	private CustomerController customerController;
+	private Long id;
+	private Long id_1;
 
 	@Before
 	public void setUp() {
@@ -52,29 +55,30 @@ public class CustomerControllerTest {
 		MockitoAnnotations.initMocks(this);
 
 		this.random = new Random(System.currentTimeMillis());
-		this.customerMapper = ICustomerMapper.INSTANCE;
-
-		this.customerController = new CustomerController(this.customerService,
-				this.customerMapper);
 
 		this.mockMvc = MockMvcBuilders.standaloneSetup(
 				this.customerController).build();
+
+		this.customerMapper = ICustomerMapper.INSTANCE;
+
+		this.id = this.random.nextLong();
+		this.id_1 = this.random.nextLong();
 	}
 
 	@Test
 	public void getAllCustomers() throws Exception {
 
+
 		// Given
-		Long id_0 = this.random.nextLong();
-		Long id_1 = this.random.nextLong();
+		CustomerDTO customerDTO_0 = CustomerDTO.CustomerDTOBuilder
+				.getInstance()
+				.createCustomerDTO();
+		CustomerDTO customerDTO_1 = CustomerDTO.CustomerDTOBuilder
+				.getInstance()
+				.createCustomerDTO();
 
-		Customer customer_0 = new Customer();
-		Customer customer_1 = new Customer();
-
-		customer_0.setId(id_0);
-		customer_1.setId(id_1);
-
-		List<Customer> customers = Arrays.asList(customer_0, customer_1);
+		List<CustomerDTO> customers = Arrays.asList(customerDTO_0,
+				customerDTO_1);
 
 		when(this.customerService.getAllCustomers()).thenReturn(customers);
 
@@ -82,29 +86,24 @@ public class CustomerControllerTest {
 		this.mockMvc.perform(get(Mappings.API_V1_CUSTOMERS)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.customers", hasSize(2)))
-				.andExpect(jsonPath("$.customers[0].customerUrl",
-						endsWith(Long.toString(id_0))))
-				.andExpect(jsonPath("$.customers[0].customerUrl",
-						startsWith(Mappings.API_V1_CUSTOMERS)))
-				.andExpect(jsonPath("$.customers[1].customerUrl",
-						endsWith(Long.toString(id_1))))
-				.andExpect(jsonPath("$.customers[1].customerUrl",
-						startsWith(Mappings.API_V1_CUSTOMERS)));
+				.andExpect(jsonPath("$.customers", hasSize(2)));
 	}
 
 	@Test
 	public void getCustomerById() throws Exception {
 
 		// Given
-		Long id = this.random.nextLong();
 		Customer customer = new Customer();
-		customer.setId(id);
+		customer.setId(this.id);
 
-		when(this.customerService.getCustomerById(id)).thenReturn(customer);
+		CustomerDTO customerDTO = this.customerMapper.toCustomerDTO(customer);
+
+		when(this.customerService.getCustomerById(this.id)).thenReturn(
+				customerDTO);
 
 		// When
-		this.mockMvc.perform(get(Mappings.API_V1_CUSTOMERS + "/" + id)
+		this.mockMvc.perform(get(
+				Mappings.API_V1_CUSTOMERS + "/" + id)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.customerUrl",
 						endsWith(Long.toString(id))))
@@ -118,30 +117,21 @@ public class CustomerControllerTest {
 		// Given
 		String firstname = "Jobs";
 		String lastname = "Steve";
-		CustomerDTO input = new CustomerDTO();
-		input.setFirstname(firstname);
-		input.setLastname(lastname);
+		Customer customer = new Customer();
+		customer.setFirstname(firstname);
+		customer.setLastname(lastname);
 
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 		String rawInput = ObjectToJsonMapper.toJson(input);
 
-		Customer inputCustomer = new Customer();
-		inputCustomer.setFirstname(firstname);
-		inputCustomer.setLastname(lastname);
+		customer.setId(this.id);
 
-		Long id = this.random.nextLong();
-		Customer savedCustomer = new Customer();
-		savedCustomer.setId(id);
-		savedCustomer.setFirstname(firstname);
-		savedCustomer.setLastname(lastname);
+		CustomerDTO savedCustomer = this.customerMapper.toCustomerDTO(customer);
 
-		when(this.customerService.createNewCustomer(inputCustomer))
+		when(this.customerService.createNewCustomer(input))
 				.thenReturn(savedCustomer);
 
-		String uriStr = UriComponentsBuilder.newInstance()
-				.path(Mappings.API_V1_CUSTOMERS)
-				.path("/")
-				.path(Long.toString(id))
-				.toUriString();
+		String uriStr = getUriStr(id);
 
 		// When & Then
 		MockHttpServletRequestBuilder requestBuilder =
@@ -162,32 +152,22 @@ public class CustomerControllerTest {
 	public void able_To_Handle_Put_Of_Existing_Customer() throws Exception {
 
 		// Given
-		Long id = this.random.nextLong();
-		String uriStr = UriComponentsBuilder.newInstance()
-				.path(Mappings.API_V1_CUSTOMERS)
-				.path("/")
-				.path(Long.toString(id))
-				.toUriString();
+		String uriStr = getUriStr(this.id);
 
 		String firstname = "Jobs";
 		String lastname = "Steve";
-		CustomerDTO input = new CustomerDTO();
-		input.setFirstname(firstname);
-		input.setLastname(lastname);
+		Customer customer = new Customer();
+		customer.setFirstname(firstname);
+		customer.setLastname(lastname);
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
 		String rawInput = ObjectToJsonMapper.toJson(input);
 
-		Customer before = new Customer();
-		before.setId(id);
-		before.setFirstname(input.getFirstname());
-		before.setLastname(input.getLastname());
+		customer.setId(this.id);
+		CustomerDTO after = this.customerMapper.toCustomerDTO(customer);
 
-		Customer after = new Customer();
-		after.setId(before.getId());
-		after.setFirstname(before.getFirstname());
-		after.setLastname(before.getLastname());
-
-		when(this.customerService.updateCustomer(before)).thenReturn(after);
+		when(this.customerService.updateCustomer(this.id, input))
+				.thenReturn(after);
 
 		// When & Then
 		MockHttpServletRequestBuilder requestBuilder =
@@ -208,30 +188,25 @@ public class CustomerControllerTest {
 	public void able_To_Handle_Patch_Of_Existing_Customer() throws Exception {
 
 		// Given
-		Long id = this.random.nextLong();
-		String uriStr = UriComponentsBuilder.newInstance()
-				.path(Mappings.API_V1_CUSTOMERS)
-				.path("/")
-				.path(Long.toString(id))
-				.toUriString();
-
+		String uriStr = this.getUriStr(this.id);
 		String firstname = "Mike";
-		CustomerDTO input = new CustomerDTO();
-		input.setFirstname(firstname);
+		String lastname = "Lee";
 
+		Customer customer = new Customer();
+		customer.setFirstname(firstname);
+
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 		String rawInput = ObjectToJsonMapper.toJson(input);
 
-		String originLastname = "Steve";
-		Customer before = new Customer();
-		before.setId(id);
-		before.setFirstname(firstname);
-
 		Customer after = new Customer();
-		after.setId(before.getId());
+		after.setId(this.id);
 		after.setFirstname(firstname);
-		after.setLastname(originLastname);
+		after.setLastname(lastname);
 
-		when(this.customerService.patchCustomer(before)).thenReturn(after);
+		CustomerDTO result = this.customerMapper.toCustomerDTO(after);
+
+		when(this.customerService.patchCustomer(this.id, input))
+				.thenReturn(result);
 
 		// When & Then
 		MockHttpServletRequestBuilder requestBuilder =
@@ -243,7 +218,7 @@ public class CustomerControllerTest {
 
 		resultActions.andExpect(status().isOk())
 				.andExpect(jsonPath("$.firstname", is(firstname)))
-				.andExpect(jsonPath("$.lastname", is(originLastname)))
+				.andExpect(jsonPath("$.lastname", is(lastname)))
 				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
 
 	}// able_To_Handle_Put_Of_Existing_Customer()
@@ -253,11 +228,7 @@ public class CustomerControllerTest {
 
 		// Given
 		Long id = this.random.nextLong();
-		String uriStr = UriComponentsBuilder.newInstance()
-				.path(Mappings.API_V1_CUSTOMERS)
-				.path("/")
-				.path(Long.toString(id))
-				.toUriString();
+		String uriStr = getUriStr(id);
 
 		// When
 		MockHttpServletRequestBuilder requestBuilder =
@@ -266,6 +237,14 @@ public class CustomerControllerTest {
 		ResultActions requestActions = this.mockMvc.perform(requestBuilder);
 
 		requestActions.andExpect(status().isOk());
+	}
+
+	private String getUriStr(Long id) {
+		return UriComponentsBuilder.newInstance()
+				.path(Mappings.API_V1_CUSTOMERS)
+				.path("/")
+				.path(Long.toString(id))
+				.toUriString();
 	}
 
 }///:~

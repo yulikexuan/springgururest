@@ -15,6 +15,16 @@ public interface ICategoryMapper {
 
 	ICategoryMapper INSTANCE = Mappers.getMapper(ICategoryMapper.class);
 
-	CategoryDTO toCategoryDTO(Category category);
+	default CategoryDTO toCategoryDTO(Category category) {
+
+		if (category == null) {
+			return null;
+		}
+
+		return CategoryDTO.CategoryDTOBuilder.getInstance()
+				.setId(category.getId())
+				.setName(category.getName())
+				.createCategoryDTO();
+	}
 
 }///:~

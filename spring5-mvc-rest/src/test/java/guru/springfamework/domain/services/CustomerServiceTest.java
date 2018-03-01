@@ -4,16 +4,19 @@
 package guru.springfamework.domain.services;
 
 
+import guru.springfamework.api.v1.mappers.ICustomerMapper;
+import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.repositories.ICustomerRepository;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -27,14 +30,20 @@ public class CustomerServiceTest {
 	@Mock
 	private ICustomerRepository customerRepository;
 
-	@InjectMocks
+	private ICustomerMapper customerMapper;
+
 	private CustomerService customerService;
+
 	private Random random;
 	private Long id;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
+		this.customerMapper = ICustomerMapper.INSTANCE;
+		this.customerService = new CustomerService(this.customerRepository,
+				this.customerMapper);
+
 		this.random = new Random(System.currentTimeMillis());
 		this.id = this.random.nextLong();
 	}
@@ -43,17 +52,16 @@ public class CustomerServiceTest {
 	public void getAllCustomers() {
 
 		// Given
-		List<Customer> customers = Arrays.asList(new Customer(), new Customer());
+		List<Customer> customers = Arrays.asList(new Customer(),
+				new Customer());
 
 		when(this.customerRepository.findAll()).thenReturn(customers);
 
 		// When
-		List<Customer> result = this.customerService.getAllCustomers();
+		List<CustomerDTO> result = this.customerService.getAllCustomers();
 
 		// Then
 		assertThat(customers.size(), is(result.size()));
-		assertThat(result.get(0), is(customers.get(0)));
-		assertThat(result.get(1), is(customers.get(1)));
 	}
 
 	@Test
@@ -69,11 +77,11 @@ public class CustomerServiceTest {
 				Optional.of(customer));
 
 		// When
-		Customer result = this.customerService.getCustomerById(this.id);
+		CustomerDTO result = this.customerService.getCustomerById(this.id);
 
 		// Then
-		assertThat(result.getId(), is(this.id));
-
+		assertThat(result.getCustomerUrl(),
+				containsString("/" + this.id));
 	}
 
 	@Test
@@ -81,21 +89,26 @@ public class CustomerServiceTest {
 
 		// Given
 		Customer customer = new Customer();
-		customer.setId(this.id);
-		customer.setFirstname("");
-		customer.setLastname("");
+		customer.setFirstname(UUID.randomUUID().toString());
+		customer.setLastname(UUID.randomUUID().toString());
+
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
 		// Given
 		Customer newCreated = new Customer();
-		customer.setId(this.id);
+		newCreated.setId(this.id);
+		newCreated.setFirstname(customer.getFirstname());
+		newCreated.setLastname(customer.getLastname());
 
 		when(this.customerRepository.save(customer)).thenReturn(newCreated);
 
 		// When
-		Customer result = this.customerService.createNewCustomer(customer);
+		CustomerDTO result = this.customerService.createNewCustomer(input);
 
 		// Then
-		assertThat(result, is(newCreated));
+		assertThat(result.getCustomerUrl(), endsWith("/" + this.id));
+		assertThat(result.getFirstname(), is(newCreated.getFirstname()));
+		assertThat(result.getLastname(), is(newCreated.getLastname()));
 	}
 
 	@Test
@@ -106,6 +119,11 @@ public class CustomerServiceTest {
 		customer.setFirstname(UUID.randomUUID().toString());
 		customer.setLastname(UUID.randomUUID().toString());
 
+		CustomerDTO input = CustomerDTO.CustomerDTOBuilder.getInstance()
+				.setFirstname(customer.getFirstname())
+				.setLastname(customer.getLastname())
+				.createCustomerDTO();
+
 		Customer savedCustomer = new Customer();
 
 		savedCustomer.setId(this.id);
@@ -115,10 +133,9 @@ public class CustomerServiceTest {
 		when(this.customerRepository.save(customer)).thenReturn(savedCustomer);
 
 		// When
-		Customer result = this.customerService.createNewCustomer(customer);
+		CustomerDTO result = this.customerService.createNewCustomer(input);
 
 		// Then
-		assertThat(result.getId(), is(this.id));
 		assertThat(result.getFirstname(), is(customer.getFirstname()));
 		assertThat(result.getLastname(), is(customer.getLastname()));
 	}
@@ -132,6 +149,8 @@ public class CustomerServiceTest {
 		customer.setFirstname(UUID.randomUUID().toString());
 		customer.setLastname(UUID.randomUUID().toString());
 
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+
 		when(this.customerRepository.existsById(this.id)).thenReturn(true);
 
 		Customer savedCustomer = new Customer();
@@ -142,33 +161,41 @@ public class CustomerServiceTest {
 		when(this.customerRepository.save(customer)).thenReturn(savedCustomer);
 
 		// When
-		Customer result = this.customerService.updateCustomer(customer);
+		CustomerDTO result = this.customerService.updateCustomer(this.id, input);
 
 		// Then
-		assertThat(result, is(savedCustomer));
+		assertThat(result.getFirstname(), is(savedCustomer.getFirstname()));
+		assertThat(result.getLastname(), is(savedCustomer.getLastname()));
+		assertThat(result.getCustomerUrl(),
+				containsString("/" + this.id));
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void id_Should_Exist_In_Repository_When_Updating() {
 
 		// Given
-		Customer customer = new Customer();
-		customer.setId(this.id);
+		CustomerDTO customerDTO = CustomerDTO.CustomerDTOBuilder
+				.getInstance()
+				.setFirstname("")
+				.setLastname("")
+				.createCustomerDTO();
 
 		when(this.customerRepository.existsById(this.id)).thenReturn(false);
 
 		// When
-		this.customerService.updateCustomer(customer);
+		this.customerService.updateCustomer(this.id, customerDTO);
 	}
 
 	@Test
 	public void able_To_Patch_An_Existing_Customer_With_First_Name() {
 
 		// Given
-		Customer input = new Customer();
-		input.setId(this.id);
+		Customer customer = new Customer();
+		customer.setId(this.id);
 		String firstname = UUID.randomUUID().toString();
-		input.setFirstname(firstname);
+		customer.setFirstname(firstname);
+
+		CustomerDTO customerDTO = this.customerMapper.toCustomerDTO(customer);
 
 		Customer existing = new Customer();
 		existing.setId(this.id);
@@ -183,19 +210,19 @@ public class CustomerServiceTest {
 		when(this.customerRepository.save(existing)).thenReturn(existing);
 
 		// When
-		Customer result = this.customerService.patchCustomer(input);
+		CustomerDTO result = this.customerService.patchCustomer(this.id,
+				customerDTO);
 
 		// Then
-		assertThat(result, is(existing));
-		assertThat(existing.getId(), is(input.getId()));
-		assertThat(existing.getFirstname(), is(input.getFirstname()));
+		assertThat(result.getLastname(), is(existing.getLastname()));
+		assertThat(existing.getFirstname(), is(customer.getFirstname()));
 	}
 
 	@Test
 	public void not_Able_To_Patch_Null() {
 
 		// When
-		this.customerService.patchCustomer(null);
+		this.customerService.patchCustomer(this.id, null);
 
 		// Then
 		verify(this.customerRepository, never()).findById(anyLong());

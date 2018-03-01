@@ -4,15 +4,14 @@
 package guru.springfamework.domain.services;
 
 
-import guru.springfamework.domain.model.Category;
+import guru.springfamework.api.v1.model.CategoryDTO;
 
 import java.util.List;
 
 
 public interface ICategoryService {
 
-	List<Category> getAllCategories();
-
-	Category getCategoryByName(String name);
+	List<CategoryDTO> getAllCategories();
+	CategoryDTO getCategoryByName(String name);
 
 }///:~
