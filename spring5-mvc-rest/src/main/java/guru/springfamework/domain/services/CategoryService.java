@@ -36,8 +36,15 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public CategoryDTO getCategoryByName(String name) {
-		return this.categoryMapper.toCategoryDTO(
-				this.categoryRepository.findByName(name));
+
+		Category category = this.categoryRepository.findByName(name);
+
+		if (category == null) {
+			throw new ResourceNotFoundException(name +
+					" category was not found.");
+		}
+
+		return this.categoryMapper.toCategoryDTO(category);
 	}
 
 }///:~

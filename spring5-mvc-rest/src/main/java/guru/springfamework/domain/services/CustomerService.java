@@ -42,7 +42,7 @@ public class CustomerService implements ICustomerService {
 
 		Customer customer = this.customerRepository
 				.findById(id)
-				.orElseThrow(RuntimeException::new);
+				.orElseThrow(ResourceNotFoundException::new);
 
 		return this.customerMapper.toCustomerDTO(customer);
 	}
@@ -60,7 +60,7 @@ public class CustomerService implements ICustomerService {
 		if (!this.customerRepository.existsById(id)) {
 			String err = ">>>>>>> Customer Id not found! " + id;
 			log.debug(err);
-			throw new RuntimeException(err);
+			throw new ResourceNotFoundException(err);
 		}
 
 		Customer input = this.customerMapper.toCustomer(customerDTO);
@@ -87,7 +87,7 @@ public class CustomerService implements ICustomerService {
 		}).orElseThrow(() -> {
 			String error = ">>>>>>> Customer does not exist: " + id;
 			log.debug(error);
-			return new RuntimeException(error);
+			return new ResourceNotFoundException(error);
 		});
 
 		return this.customerMapper.toCustomerDTO(target);

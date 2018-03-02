@@ -84,6 +84,17 @@ public class CustomerServiceTest {
 				containsString("/" + this.id));
 	}
 
+	@Test(expected = ResourceNotFoundException.class)
+	public void can_Generate_Resource_Not_Found_Exception_When_Fetch() {
+
+		// Given
+		when(this.customerRepository.findById(this.id))
+				.thenReturn(Optional.empty());
+
+		// When
+		this.customerService.getCustomerById(this.id);
+	}
+
 	@Test
 	public void able_To_Create_A_New_Customer() {
 
@@ -170,6 +181,16 @@ public class CustomerServiceTest {
 				containsString("/" + this.id));
 	}
 
+	@Test(expected = ResourceNotFoundException.class)
+	public void can_Generate_Resource_Not_Found_Exception_When_Update() {
+
+		// Given
+		when(this.customerRepository.existsById(this.id)).thenReturn(false);
+
+		// When
+		this.customerService.getCustomerById(this.id);
+	}
+
 	@Test(expected = RuntimeException.class)
 	public void id_Should_Exist_In_Repository_When_Updating() {
 
@@ -226,6 +247,17 @@ public class CustomerServiceTest {
 
 		// Then
 		verify(this.customerRepository, never()).findById(anyLong());
+	}
+
+	@Test(expected = ResourceNotFoundException.class)
+	public void can_Generate_Resource_Not_Found_Exception_When_Patching() {
+
+		// Given
+		when(this.customerRepository.findById(this.id)).thenReturn(
+				Optional.empty());
+
+		// When
+		this.customerService.getCustomerById(this.id);
 	}
 
 	@Test

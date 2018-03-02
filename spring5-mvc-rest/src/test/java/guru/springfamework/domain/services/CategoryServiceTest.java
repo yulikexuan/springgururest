@@ -76,4 +76,15 @@ public class CategoryServiceTest {
 		assertThat(result.getName(), is(NAME));
 	}
 
+
+	@Test(expected = ResourceNotFoundException.class)
+	public void able_To_Generate_Resource_Not_Found_Exception_Not_Found() {
+
+		// Given
+		when(this.categoryRepository.findByName(NAME)).thenReturn(null);
+
+		// When
+		this.categoryService.getCategoryByName(NAME);
+	}
+
 }///:~

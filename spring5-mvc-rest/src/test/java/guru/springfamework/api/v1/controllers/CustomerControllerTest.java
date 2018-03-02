@@ -5,15 +5,18 @@ package guru.springfamework.api.v1.controllers;
 
 
 import guru.springfamework.api.Mappings;
+import guru.springfamework.api.RestResponseEntityExceptionHandler;
 import guru.springfamework.api.v1.mappers.ICustomerMapper;
 import guru.springfamework.api.v1.mappers.ObjectToJsonMapper;
 import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.services.ICustomerService;
+import guru.springfamework.domain.services.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +32,7 @@ import java.util.Random;
 
 import static org.hamcrest.Matchers.*;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,6 +53,8 @@ public class CustomerControllerTest {
 	private Long id;
 	private Long id_1;
 
+	private String idUri;
+
 	@Before
 	public void setUp() {
 
@@ -56,18 +62,26 @@ public class CustomerControllerTest {
 
 		this.random = new Random(System.currentTimeMillis());
 
-		this.mockMvc = MockMvcBuilders.standaloneSetup(
-				this.customerController).build();
+		RestResponseEntityExceptionHandler exceptionAdvice =
+				new RestResponseEntityExceptionHandler();
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.customerController)
+				.setControllerAdvice(exceptionAdvice)
+				.build();
 
 		this.customerMapper = ICustomerMapper.INSTANCE;
 
 		this.id = this.random.nextLong();
 		this.id_1 = this.random.nextLong();
+
+		this.idUri = UriComponentsBuilder
+				.fromUriString(Mappings.API_V1_CUSTOMERS)
+				.path("/")
+				.path(Long.toString(this.id))
+				.toUriString();
 	}
 
 	@Test
 	public void getAllCustomers() throws Exception {
-
 
 		// Given
 		CustomerDTO customerDTO_0 = CustomerDTO.CustomerDTOBuilder
@@ -101,14 +115,33 @@ public class CustomerControllerTest {
 		when(this.customerService.getCustomerById(this.id)).thenReturn(
 				customerDTO);
 
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+				.get(this.idUri)
+				.contentType(MediaType.APPLICATION_JSON);
+
 		// When
-		this.mockMvc.perform(get(
-				Mappings.API_V1_CUSTOMERS + "/" + id)
-						.contentType(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(requestBuilder)
 				.andExpect(jsonPath("$.customerUrl",
 						endsWith(Long.toString(id))))
 				.andExpect(jsonPath("$.customerUrl",
 						startsWith(Mappings.API_V1_CUSTOMERS)));
+	}
+
+	@Test
+	public void able_To_Dispatch_Resource_Not_Found_Exception_When_Fetching()
+			throws Exception {
+
+		// Given
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+				.get(this.idUri)
+				.contentType(MediaType.APPLICATION_JSON);
+
+		when(this.customerService.getCustomerById(this.id))
+				.thenThrow(ResourceNotFoundException.class);
+
+		// When & Then
+		this.mockMvc.perform(requestBuilder)
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -152,8 +185,6 @@ public class CustomerControllerTest {
 	public void able_To_Handle_Put_Of_Existing_Customer() throws Exception {
 
 		// Given
-		String uriStr = getUriStr(this.id);
-
 		String firstname = "Jobs";
 		String lastname = "Steve";
 		Customer customer = new Customer();
@@ -171,7 +202,7 @@ public class CustomerControllerTest {
 
 		// When & Then
 		MockHttpServletRequestBuilder requestBuilder =
-				MockMvcRequestBuilders.put(uriStr)
+				MockMvcRequestBuilders.put(this.idUri)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(rawInput);
 
@@ -180,15 +211,38 @@ public class CustomerControllerTest {
 		resultActions.andExpect(status().isOk())
 				.andExpect(jsonPath("$.firstname", is(firstname)))
 				.andExpect(jsonPath("$.lastname", is(lastname)))
-				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
+				.andExpect(jsonPath("$.customerUrl", is(this.idUri)));
 
 	}// able_To_Handle_Put_Of_Existing_Customer()
+
+	@Test
+	public void able_To_Dispatch_Resource_Not_Found_Exception_When_Updating()
+			throws Exception {
+
+		// Given
+		Customer customer = new Customer();
+		customer.setId(this.id);
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+
+		String rawInput = ObjectToJsonMapper.toJson(input);
+
+		when(this.customerService.updateCustomer(this.id, input))
+				.thenThrow(ResourceNotFoundException.class);
+
+		MockHttpServletRequestBuilder requestBuilder =
+				MockMvcRequestBuilders.put(this.idUri)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(rawInput);
+
+		// When & Then
+		this.mockMvc.perform(requestBuilder)
+				.andExpect(status().isNotFound());
+	}
 
 	@Test
 	public void able_To_Handle_Patch_Of_Existing_Customer() throws Exception {
 
 		// Given
-		String uriStr = this.getUriStr(this.id);
 		String firstname = "Mike";
 		String lastname = "Lee";
 
@@ -208,20 +262,45 @@ public class CustomerControllerTest {
 		when(this.customerService.patchCustomer(this.id, input))
 				.thenReturn(result);
 
-		// When & Then
 		MockHttpServletRequestBuilder requestBuilder =
-				MockMvcRequestBuilders.patch(uriStr)
+				MockMvcRequestBuilders.patch(this.idUri)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(rawInput);
 
+		// When & Then
 		ResultActions resultActions = this.mockMvc.perform(requestBuilder);
 
 		resultActions.andExpect(status().isOk())
 				.andExpect(jsonPath("$.firstname", is(firstname)))
 				.andExpect(jsonPath("$.lastname", is(lastname)))
-				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
+				.andExpect(jsonPath("$.customerUrl", is(this.idUri)));
 
 	}// able_To_Handle_Put_Of_Existing_Customer()
+
+	@Test
+	public void able_To_Dispatch_Resource_Not_Found_Exception_When_Patching()
+			throws Exception {
+
+		// Given
+		String uri = Mappings.API_V1_CUSTOMERS + "/" + id;
+		Customer customer = new Customer();
+		customer.setId(this.id);
+		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+
+		String rawInput = ObjectToJsonMapper.toJson(input);
+
+		when(this.customerService.patchCustomer(this.id, input))
+				.thenThrow(ResourceNotFoundException.class);
+
+		MockHttpServletRequestBuilder requestBuilder =
+				MockMvcRequestBuilders.patch(this.idUri)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(rawInput);
+
+		// When & Then
+		this.mockMvc.perform(requestBuilder)
+				.andExpect(status().isNotFound());
+	}
 
 	@Test
 	public void able_To_Handle_Delete() throws Exception {

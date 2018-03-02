@@ -5,11 +5,13 @@ package guru.springfamework.api.v1.controllers;
 
 
 import guru.springfamework.api.Mappings;
+import guru.springfamework.api.RestResponseEntityExceptionHandler;
 import guru.springfamework.api.v1.controllers.CategoryController;
 import guru.springfamework.api.v1.mappers.ICategoryMapper;
 import guru.springfamework.api.v1.model.CategoryDTO;
 import guru.springfamework.domain.model.Category;
 import guru.springfamework.domain.services.ICategoryService;
+import guru.springfamework.domain.services.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -59,8 +61,12 @@ public class CategoryControllerTest {
 		MockitoAnnotations.initMocks(this);
 
 		this.random = new Random(System.currentTimeMillis());
-		this.mockMvc = MockMvcBuilders.standaloneSetup(
-				this.categoryController).build();
+
+		RestResponseEntityExceptionHandler exceptionAdvice =
+				new RestResponseEntityExceptionHandler();
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.categoryController)
+				.setControllerAdvice(exceptionAdvice)
+				.build();
 
 		this.name_0 = UUID.randomUUID().toString();
 		this.name_1 = UUID.randomUUID().toString();
@@ -122,5 +128,22 @@ public class CategoryControllerTest {
 				.andExpect(jsonPath("$.id", is(id)));
 
 	}// has_Endpoint_For_Category_By_Name()
+
+	@Test
+	public void able_To_Dispatch_Resource_Not_Found_Exception()
+			throws Exception {
+
+		// Given
+		String uri = Mappings.API_V1_CATEGORIES + "/" + this.name_0;
+
+		// When
+		when(this.categoryService.getCategoryByName(this.name_0))
+				.thenThrow(ResourceNotFoundException.class);
+
+		// Then
+		this.mockMvc.perform(get(uri)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
+	}
 
 }///:~
