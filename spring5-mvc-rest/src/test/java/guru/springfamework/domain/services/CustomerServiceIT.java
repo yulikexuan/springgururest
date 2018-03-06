@@ -10,6 +10,7 @@ import guru.springfamework.bootstrap.Bootstrap;
 import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.repositories.ICategoryRepository;
 import guru.springfamework.domain.repositories.ICustomerRepository;
+import guru.springfamework.domain.repositories.IVendorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +37,9 @@ public class CustomerServiceIT {
 	@Autowired
 	private ICategoryRepository categoryRepository;
 
+	@Autowired
+	private IVendorRepository vendorRepository;
+
 	private CustomerService customerService;
 	private ICustomerMapper customerMapper;
 
@@ -46,7 +50,8 @@ public class CustomerServiceIT {
 				this.customerRepository.findAll().size());
 		log.debug(">>>>>>> Loading customer data for testing ... ... ");
 
-		new Bootstrap(this.categoryRepository, this.customerRepository).run();
+		new Bootstrap(this.categoryRepository, this.customerRepository,
+				this.vendorRepository).run();
 
 		log.debug(">>>>>>> Customer data size after loading data: " +
 				this.customerRepository.findAll().size());
