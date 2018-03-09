@@ -11,8 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.validation.ConstraintViolationException;
+import java.util.Date;
 
 
 /*
@@ -48,6 +52,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * first handler it finds; This could cause unexpected behavior
  */
 @ControllerAdvice
+
+//@RestController
+
 /*
  * The RequestMapping annotation here is used to set the content type that is
  * returned by the ResponseEntity
@@ -70,6 +77,23 @@ public class RestResponseEntityExceptionHandler extends
 		String errMsg = "Resource not found! " + exception.getMessage();
 		return new ResponseEntity<>(errMsg, new HttpHeaders(),
 				HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler({ConstraintViolationException.class})
+	public ResponseEntity<ApiError> handleConstraintViolationException(
+			ConstraintViolationException exception, WebRequest webRequest) {
+
+		String details = exception.getConstraintViolations().stream()
+				.map(cve -> "'" + cve.getPropertyPath() + "' " + cve.getMessage())
+				.reduce("", (s1, s2) -> s1 + s2);
+
+		ApiError apiError = ApiError.ApiErrorBuilder.getInstance()
+				.setTimestamp(new Date())
+				.setMessage("Data field validation failed!")
+				.setDetails(details)
+				.createApiError();
+
+		return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
 	}
 
 }///:~

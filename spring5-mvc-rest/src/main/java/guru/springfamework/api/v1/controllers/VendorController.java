@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -42,7 +43,7 @@ public class VendorController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public VendorDTO createNewVendor(@RequestBody VendorDTO vendorDTO) {
+	public VendorDTO createNewVendor(@Valid @RequestBody VendorDTO vendorDTO) {
 		return this.vendorService.createNewVendor(vendorDTO);
 	}
 
