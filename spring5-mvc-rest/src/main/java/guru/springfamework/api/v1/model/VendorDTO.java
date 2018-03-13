@@ -4,6 +4,9 @@
 package guru.springfamework.api.v1.model;
 
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -12,7 +15,12 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class VendorDTO {
 
+	@ApiModelProperty(value = "The name of the vendor.",
+			notes = "This peoperty is required.", required = true)
 	private String name;
+
+	@ApiModelProperty(value = "Vendor's URL.",
+			notes = "The URL of the vendor.", required = false)
 	private String vendorUrl;
 
 	VendorDTO() {}

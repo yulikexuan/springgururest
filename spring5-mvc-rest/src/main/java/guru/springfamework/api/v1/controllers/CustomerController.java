@@ -8,6 +8,8 @@ import guru.springfamework.api.Mappings;
 import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.api.v1.model.CustomerListDTO;
 import guru.springfamework.domain.services.ICustomerService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
+@Api(description = "This is the REST Controller for Customer")
 @RestController
 @RequestMapping(Mappings.API_V1_CUSTOMERS)
 public class CustomerController {
@@ -28,6 +31,8 @@ public class CustomerController {
 		this.customerService = customerService;
 	}
 
+	@ApiOperation(value="To get a list of customers.",
+			notes="Will fetch all customers.")
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	public CustomerListDTO getAllCustomers() {
