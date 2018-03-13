@@ -8,9 +8,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.ArrayList;
 
 
 /*
@@ -58,7 +62,22 @@ public class SwaggerConfig { // } extends WebMvcConfigurationSupport { // for no
 						.basePackage("guru.springfamework.api"))
 				.paths(PathSelectors.any())
 				.build()
-				.pathMapping("/");
+				.pathMapping("/")
+				.apiInfo(this.metaInfo());
+	}
+
+	private ApiInfo metaInfo() {
+
+		Contact contact = new Contact("Yu LI",
+				"https://github.com/yulikexuan/springgururest",
+				"likexuan1996@yahoo.com");
+
+		return new ApiInfo("RESTful Web Service in Spring",
+				"Spring Framework 5: Beginner to Guru",
+				"1.0.0", "Terms of Service", contact,
+				"Apache License Version 2.0",
+				"https://www.apache.org/licenses/LICENSE-2.0",
+				new ArrayList<>());
 	}
 
 //    For non spring-boot app
