@@ -1,4 +1,4 @@
-//: guru.springframework.spring5reactiverest.domain.model.Category.java
+//: guru.springframework.spring5reactiverest.domain.model.Vendor.java
 
 
 package guru.springframework.spring5reactiverest.domain.model;
@@ -15,14 +15,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document
 @Builder
-
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
+public class Vendor {
 
 	@Id
 	private String id;
 
-	private String description;
+	private String firstName;
+
+	private String lastName;
 
 }///:~
