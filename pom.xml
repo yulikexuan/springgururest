@@ -18,7 +18,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>spring5-mvc-rest</module>
+                <module>spring5-reactive-rest</module>
             </modules>
         </profile>
         
@@ -29,6 +29,7 @@
             </activation>
             <modules>
                 <module>spring5-mvc-rest</module>
+                <module>spring5-reactive-rest</module>
             </modules>
         </profile>
         
