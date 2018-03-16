@@ -1,7 +1,7 @@
-//: guru.springframework.spring5reactiverest.controllers.CategoryController.java
+//: guru.springframework.spring5reactiverest.controllers.v1.CategoryController.java
 
 
-package guru.springframework.spring5reactiverest.controllers;
+package guru.springframework.spring5reactiverest.controllers.v1;
 
 
 import guru.springframework.spring5reactiverest.domain.model.Category;

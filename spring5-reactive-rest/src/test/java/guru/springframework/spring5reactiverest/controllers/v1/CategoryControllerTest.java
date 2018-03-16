@@ -1,9 +1,10 @@
-//: guru.springframework.spring5reactiverest.controllers.CategoryControllerTest.java
+//: guru.springframework.spring5reactiverest.controllers.v1.CategoryControllerTest.java
 
 
-package guru.springframework.spring5reactiverest.controllers;
+package guru.springframework.spring5reactiverest.controllers.v1;
 
 
+import guru.springframework.spring5reactiverest.controllers.v1.CategoryController;
 import guru.springframework.spring5reactiverest.domain.model.Category;
 import guru.springframework.spring5reactiverest.domain.repositories.ICategoryRepository;
 import org.junit.Before;
@@ -14,11 +15,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 
@@ -53,7 +49,7 @@ public class CategoryControllerTest {
 						Category.builder().description("CAT-2").build()));
 
 		// When & Then
-		this.webTestClient.get().uri("/api/v1/categories/")
+		this.webTestClient.get().uri("/api/v1/categories")
 				.exchange()
 				.expectBodyList(Category.class)
 				.hasSize(2);
