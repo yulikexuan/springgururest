@@ -4,18 +4,19 @@
 package guru.springframework.spring5reactiverest.controllers.v1;
 
 
-import guru.springframework.spring5reactiverest.controllers.v1.CategoryController;
 import guru.springframework.spring5reactiverest.domain.model.Category;
 import guru.springframework.spring5reactiverest.domain.repositories.ICategoryRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.any;
 
 
 public class CategoryControllerTest {
@@ -68,6 +69,25 @@ public class CategoryControllerTest {
 		this.webTestClient.get().uri("/api/v1/categories/someid")
 				.exchange()
 				.expectBody(Category.class);
+	}
+
+	@Test
+	public void able_To_Create_New_Categories() throws Exception {
+
+		// Given
+		given(this.categoryRepository.saveAll(any(Publisher.class)))
+				.willReturn(Flux.just(Category.builder().build()));
+
+		Mono<Category> toBeSaved = Mono.just(
+				Category.builder().description("Some Cat").build());
+
+		// When & Then
+		this.webTestClient.post()
+				.uri("/api/v1/categories")
+				.body(toBeSaved, Category.class)
+				.exchange()
+				.expectStatus()
+				.isCreated();
 	}
 
 }///:~
