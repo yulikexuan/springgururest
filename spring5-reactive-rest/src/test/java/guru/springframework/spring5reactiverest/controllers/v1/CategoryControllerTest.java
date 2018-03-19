@@ -90,4 +90,23 @@ public class CategoryControllerTest {
 				.isCreated();
 	}
 
+	@Test
+	public void able_To_Update_A_Existing_Category() throws Exception {
+
+		// Given
+		given(this.categoryRepository.save(any(Category.class)))
+				.willReturn(Mono.just(Category.builder().build()));
+
+		Mono<Category> toBeUpdated = Mono.just(
+				Category.builder().description("some cat").build());
+
+		// When & Then
+		this.webTestClient.put()
+				.uri("/api/v1/categories/rtyreyre")
+				.body(toBeUpdated, Category.class)
+				.exchange()
+				.expectStatus()
+				.isOk();
+	}
+
 }///:~

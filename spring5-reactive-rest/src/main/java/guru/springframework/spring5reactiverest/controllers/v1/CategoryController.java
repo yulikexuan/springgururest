@@ -48,4 +48,12 @@ public class CategoryController {
 		return this.categoryRepository.saveAll(categoryStream).then();
 	}
 
+	@PutMapping("/api/v1/categories/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	Mono<Category> update(@PathVariable String id,
+	                      @RequestBody Category category) {
+		category.setId(id);
+		return this.categoryRepository.save(category);
+	}
+
 }///:~
