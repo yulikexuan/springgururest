@@ -15,6 +15,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 
@@ -103,6 +105,34 @@ public class CategoryControllerTest {
 		// When & Then
 		this.webTestClient.put()
 				.uri("/api/v1/categories/rtyreyre")
+				.body(toBeUpdated, Category.class)
+				.exchange()
+				.expectStatus()
+				.isOk();
+	}
+
+	@Test
+	public void able_To_Update_Part_Of_A_Existing_Category() throws Exception {
+
+		// Given
+		String id = UUID.randomUUID().toString();
+
+		Category existingCategory = Category.builder()
+				.description("desc")
+				.build();
+
+		given(this.categoryRepository.findById(id))
+				.willReturn(Mono.just(existingCategory));
+
+		given(this.categoryRepository.save(any(Category.class)))
+				.willReturn(Mono.just(Category.builder().build()));
+
+		Mono<Category> toBeUpdated = Mono.just(
+				Category.builder().description("newdesc").build());
+
+		// When & Then
+		this.webTestClient.patch()
+				.uri("/api/v1/categories/" + id)
 				.body(toBeUpdated, Category.class)
 				.exchange()
 				.expectStatus()
