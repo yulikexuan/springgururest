@@ -16,6 +16,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
@@ -120,6 +123,40 @@ public class VendorControllerTest {
 				.exchange()
 				.expectStatus()
 				.isOk();
+	}
+
+	@Test
+	public void able_To_Patch_An_Existing_Vendor() throws Exception {
+
+		// Given
+		String firstname = UUID.randomUUID().toString();
+		String lastname = UUID.randomUUID().toString();
+		String id = UUID.randomUUID().toString();
+
+		Vendor existing = Vendor.builder().build();
+		given(this.vendorRepository.findById(id))
+				.willReturn(Mono.just(existing));
+
+		given(this.vendorRepository.save(existing))
+				.willReturn(Mono.just(Vendor.builder().build()));
+
+		Vendor vendor = Vendor.builder()
+				.firstName(firstname)
+				.lastName(lastname)
+				.build();
+		Mono<Vendor> toBeUpdated = Mono.just(vendor);
+
+		// When
+		this.webTestClient.patch()
+				.uri("/api/v1/vendors/" + id)
+				.body(toBeUpdated, Vendor.class)
+				.exchange()
+				.expectStatus()
+				.isOk();
+
+		// Then
+		assertThat(existing.getFirstName(), is(firstname));
+		assertThat(existing.getLastName(), is(lastname));
 	}
 
 }///:~

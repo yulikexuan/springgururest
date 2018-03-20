@@ -60,7 +60,10 @@ public class CategoryController {
 	                     @RequestBody Category category) {
 
 		Category existing = this.categoryRepository.findById(id).block();
-		existing.setDescription(category.getDescription());
+		String description = category.getDescription();
+		if (description != null) {
+			existing.setDescription(description);
+		}
 		return this.categoryRepository.save(existing);
 	}
 
