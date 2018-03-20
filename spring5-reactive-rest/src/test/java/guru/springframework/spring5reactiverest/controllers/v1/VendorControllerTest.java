@@ -6,6 +6,7 @@ package guru.springframework.spring5reactiverest.controllers.v1;
 
 import guru.springframework.spring5reactiverest.domain.model.Vendor;
 import guru.springframework.spring5reactiverest.domain.repositories.IVendorRepository;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -15,6 +16,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -97,6 +99,27 @@ public class VendorControllerTest {
 				.exchange()
 				.expectStatus()
 				.isCreated();
+	}
+
+	@Test
+	public void able_To_Update_An_Existing_Vendor() throws Exception {
+
+		// Given
+		given(this.vendorRepository.save(any(Vendor.class)))
+				.willReturn(Mono.just(Vendor.builder().build()));
+
+		Vendor vendor = Vendor.builder()
+				.firstName("Mike")
+				.lastName("Lee").build();
+		Mono<Vendor> toBeUpdated = Mono.just(vendor);
+
+		// When & Then
+		this.webTestClient.put()
+				.uri("/api/v1/vendors/lsafdjsla")
+				.body(toBeUpdated, Vendor.class)
+				.exchange()
+				.expectStatus()
+				.isOk();
 	}
 
 }///:~

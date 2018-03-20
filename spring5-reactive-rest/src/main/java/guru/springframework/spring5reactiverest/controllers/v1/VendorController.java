@@ -40,4 +40,11 @@ public class VendorController {
 		return this.vendorRepository.saveAll(vendorsStream).then();
 	}
 
+	@PutMapping("/api/v1/vendors/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	Mono<Vendor> update(@PathVariable String id, @RequestBody Vendor vendor) {
+		vendor.setId(id);
+		return this.vendorRepository.save(vendor);
+	}
+
 }///:~
