@@ -4,14 +4,14 @@
 package guru.springfamework.bootstrap;
 
 
-import guru.springfamework.domain.model.Category;
-import guru.springfamework.domain.model.Customer;
-import guru.springfamework.domain.model.Vendor;
+import guru.springfamework.domain.model.*;
 import guru.springfamework.domain.repositories.ICategoryRepository;
 import guru.springfamework.domain.repositories.ICustomerRepository;
+import guru.springfamework.domain.repositories.IUserRepository;
 import guru.springfamework.domain.repositories.IVendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 
@@ -31,14 +31,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class Bootstrap implements CommandLineRunner {
 
+	private final PasswordEncoder passwordencoder;
+
+	private final IUserRepository userRepository;
 	private final ICategoryRepository categoryRepository;
 	private final ICustomerRepository customerRepository;
 	private final IVendorRepository vendorRepository;
 
-	public Bootstrap(ICategoryRepository categoryRepository,
+	public Bootstrap(PasswordEncoder passwordencoder,
+	                 IUserRepository userRepository,
+	                 ICategoryRepository categoryRepository,
 	                 ICustomerRepository customerRepository,
 	                 IVendorRepository vendorRepository) {
-		
+
+		this.passwordencoder = passwordencoder;
+		this.userRepository = userRepository;
 		this.categoryRepository = categoryRepository;
 		this.customerRepository = customerRepository;
 		this.vendorRepository = vendorRepository;
@@ -49,10 +56,43 @@ public class Bootstrap implements CommandLineRunner {
 	 */
 	@Override
 	public void run(String... args) {
+		this.loadUsers();
 		this.loadCategories();
 		this.loadCustomers();
 		this.loadVendors();
 	}// End of run()
+
+	private void loadUsers() {
+
+		String defaultPassword = "password";
+		String encryptedPw = this.passwordencoder.encode(defaultPassword);
+		System.out.println("Encrypted password: " + encryptedPw);
+
+		User user1 = User.builder()
+				.setUsername("yli")
+				.setPassword(encryptedPw)
+				.addAuthority(
+						Authority.builder()
+								.setAuthority("ROLE_USER")
+								.createAuthority())
+				.createUser();
+
+		User user2 = User.builder()
+				.setUsername("admin")
+				.setPassword(encryptedPw)
+				.addAuthority(
+						Authority.builder()
+								.setAuthority("ROLE_USER")
+								.setAuthority("ROLE_ADMIN")
+								.createAuthority())
+				.createUser();
+
+		this.userRepository.save(user1);
+		this.userRepository.save(user2);
+
+		System.out.println(">>>>>>> Users Loaded = " +
+				this.userRepository.count());
+	}
 
 	private void loadCategories() {
 

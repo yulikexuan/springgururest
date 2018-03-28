@@ -10,6 +10,7 @@ import guru.springfamework.bootstrap.Bootstrap;
 import guru.springfamework.domain.model.Customer;
 import guru.springfamework.domain.repositories.ICategoryRepository;
 import guru.springfamework.domain.repositories.ICustomerRepository;
+import guru.springfamework.domain.repositories.IUserRepository;
 import guru.springfamework.domain.repositories.IVendorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.UUID;
@@ -30,6 +32,12 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class CustomerServiceIT {
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private IUserRepository userRepository;
 
 	@Autowired
 	private ICustomerRepository customerRepository;
@@ -50,7 +58,8 @@ public class CustomerServiceIT {
 				this.customerRepository.findAll().size());
 		log.debug(">>>>>>> Loading customer data for testing ... ... ");
 
-		new Bootstrap(this.categoryRepository, this.customerRepository,
+		new Bootstrap(this.passwordEncoder, this.userRepository,
+				this.categoryRepository, this.customerRepository,
 				this.vendorRepository).run();
 
 		log.debug(">>>>>>> Customer data size after loading data: " +

@@ -7,7 +7,7 @@ spring:
   # Pretty-print JSON responses
   jackson:
     serialization.INDENT_OUTPUT: true
-  security:
-    user:
-      name: admin
-      password: password
+#  security:
+#    user:
+#      name: admin
+#      password: password
