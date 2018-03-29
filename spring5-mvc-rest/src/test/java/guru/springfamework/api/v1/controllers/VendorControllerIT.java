@@ -11,6 +11,7 @@ import guru.springfamework.domain.services.IVendorService;
 import guru.springfamework.domain.services.VendorService;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,7 @@ public class VendorControllerIT {
 				.createVendorDTO();
 	}
 
+	@Ignore
 	@Test
 	public void able_To_Get_All_Vendors() throws Exception {
 
@@ -131,6 +133,7 @@ public class VendorControllerIT {
 				.andExpect(jsonPath("$.vendors", hasSize(2)));
 	}
 
+	@Ignore
 	@Test
 	public void getVendorById() throws Exception {
 
