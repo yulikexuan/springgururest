@@ -49,21 +49,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * Configuring cross-site request forgery protection
 	 */
 	@Override
-	public void configure(HttpSecurity http) throws Exception {
+	public void configure(HttpSecurity httpSecurity) throws Exception {
 
-		http.httpBasic();
+		httpSecurity.httpBasic();
 
-		http.authorizeRequests()
-				.antMatchers("/api/v1/**")
-				.hasRole("USER")
+		httpSecurity
+				.authorizeRequests()
+						.antMatchers("/api/v1/**")
+						.hasRole("USER")
 				.and()
 				.authorizeRequests()
-				.antMatchers("/h2-console/**")
-				.hasRole("ADMIN");
+						.antMatchers("/h2-console/**")
+						.hasRole("ADMIN")
+				.and()
+				.authorizeRequests()
+						.antMatchers("/", "/index", "/home")
+						.permitAll()
+		        .and()
+				// Sets up a security filter that intercepts POST requests to
+				//     "/logout"
+				.logout()
+						.logoutSuccessUrl("/index");
 
 		// For access h2 database console
-		http.csrf().disable();
-		http.headers()
+		httpSecurity.csrf().disable();
+		httpSecurity.headers()
 				.frameOptions()
 				.disable();
 	}

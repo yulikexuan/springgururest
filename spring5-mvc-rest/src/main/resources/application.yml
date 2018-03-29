@@ -11,3 +11,11 @@ spring:
 #    user:
 #      name: admin
 #      password: password
+server:
+  port: 8443
+  ssl:
+    # D:\gwt\springgururest\keystore.guru
+    key-store: keystore.guru
+    key-store-password: password
+    key-store-type: PKCS12
+    key-alias: tomcat
