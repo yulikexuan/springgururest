@@ -27,7 +27,7 @@ public class User implements UserDetails {
 
 	private boolean enabled = true;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "userId")
 	private Set<Authority> authorities = new HashSet<>();
 

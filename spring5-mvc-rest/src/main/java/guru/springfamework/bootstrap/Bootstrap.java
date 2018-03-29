@@ -9,7 +9,6 @@ import guru.springfamework.domain.repositories.ICategoryRepository;
 import guru.springfamework.domain.repositories.ICustomerRepository;
 import guru.springfamework.domain.repositories.IUserRepository;
 import guru.springfamework.domain.repositories.IVendorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -83,6 +82,9 @@ public class Bootstrap implements CommandLineRunner {
 				.addAuthority(
 						Authority.builder()
 								.setAuthority("ROLE_USER")
+								.createAuthority())
+				.addAuthority(
+						Authority.builder()
 								.setAuthority("ROLE_ADMIN")
 								.createAuthority())
 				.createUser();

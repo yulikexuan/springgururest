@@ -51,21 +51,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 
+		http.httpBasic();
+
 		http.authorizeRequests()
 				.antMatchers("/api/v1/**")
 				.hasRole("USER")
 				.and()
 				.authorizeRequests()
 				.antMatchers("/h2-console/**")
-				.permitAll();
+				.hasRole("ADMIN");
 
-		http.csrf()
-				.disable();
-
+		// For access h2 database console
+		http.csrf().disable();
 		http.headers()
 				.frameOptions()
 				.disable();
-
 	}
 
 }///:~
