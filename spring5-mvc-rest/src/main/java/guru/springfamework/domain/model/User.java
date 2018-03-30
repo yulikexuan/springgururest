@@ -27,7 +27,8 @@ public class User implements UserDetails {
 
 	private boolean enabled = true;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,
+			orphanRemoval = true)
 	@JoinColumn(name = "userId")
 	private Set<Authority> authorities = new HashSet<>();
 
@@ -41,10 +42,6 @@ public class User implements UserDetails {
 
 	public static final Builder builder() {
 		return new Builder();
-	}
-
-	public void addAuthority(Authority auth) {
-		this.authorities.add(auth);
 	}
 
 	@Override
@@ -91,7 +88,7 @@ public class User implements UserDetails {
 		}
 
 		public User createUser() {
-			return new User(username, password, authorities);
+			return new User(this.username, this.password, this.authorities);
 		}
 	}
 

@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	/*
 	 * Config how security is handled at the web level
-	 * Requiring that certain security cinditions are met before allowing a
+	 * Requiring that certain security conditions are met before allowing a
 	 * request to be served
 	 * Configuring a custom login page
 	 * Enabling users to be able to log out of the app
