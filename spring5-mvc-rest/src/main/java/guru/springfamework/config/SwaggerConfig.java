@@ -29,7 +29,7 @@ public class SwaggerConfig {
 		 * A Springfox Docket instance provides the primary API configuration
 		 * with sensible defaults and convenience methods for configuration
 		 *
-		 * Docket, Soringfox's primary api configuration mechanism is
+		 * Docket, Springfox's primary api configuration mechanism is
 		 * initialized for swagger sprcification 2.0
 		 *
 		 * select() returns an instance of ApiSelectorBuilder to give fine
@@ -46,7 +46,7 @@ public class SwaggerConfig {
 		 *
 		 * paths() allows selection of Path's using a predicate
 		 *
-		 * build(), the selectorrequires to be built after configuring the api
+		 * build(), the selector requires to be built after configuring the api
 		 * and path selectors
 		 *
 		 * pathMapping(), Adds a servlet path mapping, when the servlet has a
