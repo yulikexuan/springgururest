@@ -20,41 +20,41 @@ import static org.junit.Assert.*;
 
 public class IVendorMapperTest {
 
-	private IVendorMapper vendorMapper;
+    private IVendorMapper vendorMapper;
 
 
-	@Before
-	public void setUp() throws Exception {
-		this.vendorMapper = IVendorMapper.INSTANCE;
-	}
+    @Before
+    public void setUp() throws Exception {
+        this.vendorMapper = IVendorMapper.INSTANCE;
+    }
 
-	@Test
-	public void null_VendorDTO_For_Null_Vendor() {
+    @Test
+    public void null_VendorDTO_For_Null_Vendor() {
 
-		// When
-		VendorDTO dto = this.vendorMapper.toVendorDTO(null);
+        // When
+        VendorDTO dto = this.vendorMapper.toVendorDTO(null);
 
-		// Then
-		assertThat(dto, nullValue());
-	}
+        // Then
+        assertThat(dto, nullValue());
+    }
 
-	@Test
-	public void able_To_Map_Vendor_To_VendorDTO() {
+    @Test
+    public void able_To_Map_Vendor_To_VendorDTO() {
 
-		// Given
-		Random random = new Random(System.currentTimeMillis());
-		Long id = random.nextLong();
-		String name = UUID.randomUUID().toString();
-		Vendor vendor = new Vendor();
-		vendor.setId(id);
-		vendor.setName(name);
+        // Given
+        Random random = new Random(System.currentTimeMillis());
+        Long id = random.nextLong();
+        String name = UUID.randomUUID().toString();
+        Vendor vendor = new Vendor();
+        vendor.setId(id);
+        vendor.setName(name);
 
-		// When
-		VendorDTO dto = this.vendorMapper.toVendorDTO(vendor);
+        // When
+        VendorDTO dto = this.vendorMapper.toVendorDTO(vendor);
 
-		// Then
-		assertThat(dto.getName(), is(name));
-		assertThat(dto.getVendorUrl(), endsWith("/" + id));
-	}
+        // Then
+        assertThat(dto.getName(), is(name));
+        assertThat(dto.getVendorUrl(), endsWith("/" + id));
+    }
 
 }///:~

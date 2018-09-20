@@ -22,31 +22,31 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class CategoryRepositoryIT {
 
-	@Autowired
-	private ICategoryRepository categoryRepository;
+    @Autowired
+    private ICategoryRepository categoryRepository;
 
-	@Test
-	public void able_To_Get_All_Categories() {
+    @Test
+    public void able_To_Get_All_Categories() {
 
-		// When
-		List<Category> categories = this.categoryRepository.findAll();
+        // When
+        List<Category> categories = this.categoryRepository.findAll();
 
-		// Then
-		assertThat(categories.size(), greaterThan(0));
-	}
+        // Then
+        assertThat(categories.size(), greaterThan(0));
+    }
 
-	@Test
-	public void able_To_Get_Category_By_Name() {
+    @Test
+    public void able_To_Get_Category_By_Name() {
 
-		// Given
-		List<Category> categories = this.categoryRepository.findAll();
-		String name = categories.get(0).getName();
+        // Given
+        List<Category> categories = this.categoryRepository.findAll();
+        String name = categories.get(0).getName();
 
-		// When
-		Category category = this.categoryRepository.findByName(name);
+        // When
+        Category category = this.categoryRepository.findByName(name);
 
-		// Then
-		assertThat(category.getName(), is(name));
-	}
+        // Then
+        assertThat(category.getName(), is(name));
+    }
 
 }///:~

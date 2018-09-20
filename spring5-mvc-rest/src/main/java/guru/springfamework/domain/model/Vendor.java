@@ -19,11 +19,11 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class Vendor {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotBlank
-	private String name;
+    @NotBlank
+    private String name;
 
 }///:~

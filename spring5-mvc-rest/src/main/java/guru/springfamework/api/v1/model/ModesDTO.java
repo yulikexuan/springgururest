@@ -13,8 +13,8 @@ import java.util.HashMap;
 @Data
 public class ModesDTO extends HashMap<String, InfoDTO> {
 
-	public Collection<InfoDTO> getAllInfos() {
-		return this.values();
-	}
+    public Collection<InfoDTO> getAllInfos() {
+        return this.values();
+    }
 
 }///:~

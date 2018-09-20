@@ -20,86 +20,80 @@ import java.util.stream.Collectors;
 @Service
 public class VendorService implements IVendorService {
 
-	private final IVendorRepository vendorRepository;
-	private final IVendorMapper vendorMapper;
+    private final IVendorRepository vendorRepository;
+    private final IVendorMapper vendorMapper;
 
-	@Autowired
-	public VendorService(IVendorRepository vendorRepository,
-	                     IVendorMapper vendorMapper) {
-		this.vendorRepository = vendorRepository;
-		this.vendorMapper = vendorMapper;
-	}
+    @Autowired
+    public VendorService(IVendorRepository vendorRepository, IVendorMapper vendorMapper) {
+        this.vendorRepository = vendorRepository;
+        this.vendorMapper = vendorMapper;
+    }
 
-	@Override
-	public List<VendorDTO> getAllVendors() {
+    @Override
+    public List<VendorDTO> getAllVendors() {
 
-		return this.vendorRepository.findAll().stream()
-				.map(this.vendorMapper::toVendorDTO)
-				.collect(Collectors.toList());
-	}
+        return this.vendorRepository.findAll().stream().map(this.vendorMapper::toVendorDTO).collect(Collectors.toList());
+    }
 
-	@Override
-	public VendorDTO getVendorById(Long id) {
+    @Override
+    public VendorDTO getVendorById(Long id) {
 
-		Vendor vendor = this.vendorRepository
-				.findById(id)
-				.orElseThrow(ResourceNotFoundException::new);
+        Vendor vendor = this.vendorRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
-		return this.vendorMapper.toVendorDTO(vendor);
-	}
+        return this.vendorMapper.toVendorDTO(vendor);
+    }
 
-	@Override
-	public VendorDTO createNewVendor(VendorDTO vendorDTO) {
+    @Override
+    public VendorDTO createNewVendor(VendorDTO vendorDTO) {
 
-		Vendor vendor = this.vendorMapper.toVendor(vendorDTO);
-		Vendor saved = this.vendorRepository.save(vendor);
-		VendorDTO result = this.vendorMapper.toVendorDTO(saved);
+        Vendor vendor = this.vendorMapper.toVendor(vendorDTO);
+        Vendor saved = this.vendorRepository.save(vendor);
+        VendorDTO result = this.vendorMapper.toVendorDTO(saved);
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public VendorDTO updateVendor(Long id, VendorDTO vendorDTO) {
+    @Override
+    public VendorDTO updateVendor(Long id, VendorDTO vendorDTO) {
 
-		if (!this.vendorRepository.existsById(id)) {
-			String err = ">>>>>>> Vendor Id not found! " + id;
-			log.debug(err);
-			throw new ResourceNotFoundException(err);
-		}
+        if (!this.vendorRepository.existsById(id)) {
+            String err = ">>>>>>> Vendor Id not found! " + id;
+            log.debug(err);
+            throw new ResourceNotFoundException(err);
+        }
 
-		Vendor vendor = this.vendorMapper.toVendor(vendorDTO);
-		vendor.setId(id);
-		Vendor saved = this.vendorRepository.save(vendor);
-		return this.vendorMapper.toVendorDTO(saved);
-	}
+        Vendor vendor = this.vendorMapper.toVendor(vendorDTO);
+        vendor.setId(id);
+        Vendor saved = this.vendorRepository.save(vendor);
+        return this.vendorMapper.toVendorDTO(saved);
+    }
 
-	@Override
-	public VendorDTO patchVendor(Long id, VendorDTO vendorDTO) {
+    @Override
+    public VendorDTO patchVendor(Long id, VendorDTO vendorDTO) {
 
-		if ((id == null) || (vendorDTO == null)) {
-			return null;
-		}
+        if ((id == null) || (vendorDTO == null)) {
+            return null;
+        }
 
-		Vendor patched = this.vendorRepository.findById(id)
-				.map(v -> {
-					String newName = vendorDTO.getName();
-					if (newName != null) {
-						v.setName(newName);
-					}
-					return this.vendorRepository.save(v);
-				}).orElseThrow(ResourceNotFoundException::new);
+        Vendor patched = this.vendorRepository.findById(id).map(v -> {
+            String newName = vendorDTO.getName();
+            if (newName != null) {
+                v.setName(newName);
+            }
+            return this.vendorRepository.save(v);
+        }).orElseThrow(ResourceNotFoundException::new);
 
-		return this.vendorMapper.toVendorDTO(patched);
-	}
+        return this.vendorMapper.toVendorDTO(patched);
+    }
 
-	@Override
-	public void deleteVendor(Long id) {
+    @Override
+    public void deleteVendor(Long id) {
 
-		if (id == null) {
-			return;
-		}
+        if (id == null) {
+            return;
+        }
 
-		this.vendorRepository.deleteById(id);
-	}
+        this.vendorRepository.deleteById(id);
+    }
 
 }///:~

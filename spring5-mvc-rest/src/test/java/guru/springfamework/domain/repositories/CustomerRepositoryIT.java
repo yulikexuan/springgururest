@@ -22,32 +22,31 @@ import static org.junit.Assert.assertThat;
 @SpringBootTest
 public class CustomerRepositoryIT {
 
-	@Autowired
-	private ICustomerRepository customerRepository;
+    @Autowired
+    private ICustomerRepository customerRepository;
 
-	@Test
-	public void able_To_Get_All_Customers() {
+    @Test
+    public void able_To_Get_All_Customers() {
 
-		// When
-		List<Customer> customers = this.customerRepository.findAll();
+        // When
+        List<Customer> customers = this.customerRepository.findAll();
 
-		// Then
-		assertThat(customers.size(), greaterThan(0));
-	}
+        // Then
+        assertThat(customers.size(), greaterThan(0));
+    }
 
-	@Test
-	public void able_To_Get_Customers_By_Id() {
+    @Test
+    public void able_To_Get_Customers_By_Id() {
 
-		// Given
-		List<Customer> customers = this.customerRepository.findAll();
-		Long id = customers.get(0).getId();
+        // Given
+        List<Customer> customers = this.customerRepository.findAll();
+        Long id = customers.get(0).getId();
 
-		// When
-		Customer result = this.customerRepository.findById(id).orElseThrow(
-				RuntimeException::new);
+        // When
+        Customer result = this.customerRepository.findById(id).orElseThrow(RuntimeException::new);
 
-		// Then
-		assertThat(result.getId(), is(id));
-	}
+        // Then
+        assertThat(result.getId(), is(id));
+    }
 
 }///:~

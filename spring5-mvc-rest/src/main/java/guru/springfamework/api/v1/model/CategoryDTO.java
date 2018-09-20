@@ -12,43 +12,45 @@ import lombok.Getter;
 @EqualsAndHashCode
 public final class CategoryDTO {
 
-	// DTO class must have non-final fields because of the non-private
-	// constructor
-	private Long id;
-	private String name;
+    // DTO class must have non-final fields because of the non-private
+    // constructor
+    private Long id;
+    private String name;
 
-	// DTO class must have a non-private default constructor
-	CategoryDTO() {}
+    // DTO class must have a non-private default constructor
+    CategoryDTO() {
+    }
 
-	private CategoryDTO(Long id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    private CategoryDTO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-	public static class CategoryDTOBuilder {
+    public static class CategoryDTOBuilder {
 
-		private Long id;
-		private String name;
+        private Long id;
+        private String name;
 
-		private CategoryDTOBuilder() {}
+        private CategoryDTOBuilder() {
+        }
 
-		public static CategoryDTOBuilder getInstance() {
-			return new CategoryDTOBuilder();
-		}
+        public static CategoryDTOBuilder getInstance() {
+            return new CategoryDTOBuilder();
+        }
 
-		public CategoryDTOBuilder setId(Long id) {
-			this.id = id;
-			return this;
-		}
+        public CategoryDTOBuilder setId(Long id) {
+            this.id = id;
+            return this;
+        }
 
-		public CategoryDTOBuilder setName(String name) {
-			this.name = name;
-			return this;
-		}
+        public CategoryDTOBuilder setName(String name) {
+            this.name = name;
+            return this;
+        }
 
-		public CategoryDTO createCategoryDTO() {
-			return new CategoryDTO(id, name);
-		}
-	}
+        public CategoryDTO createCategoryDTO() {
+            return new CategoryDTO(id, name);
+        }
+    }
 
 }///:~

@@ -15,29 +15,20 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Mapper
 public interface ICustomerMapper {
 
-	ICustomerMapper INSTANCE = Mappers.getMapper(ICustomerMapper.class);
+    ICustomerMapper INSTANCE = Mappers.getMapper(ICustomerMapper.class);
 
-	Customer toCustomer(CustomerDTO customerDTO);
+    Customer toCustomer(CustomerDTO customerDTO);
 
     default CustomerDTO toCustomerDTO(Customer customer) {
 
-		if ( customer == null ) {
-			return null;
-		}
+        if (customer == null) {
+            return null;
+        }
 
-		Long id = customer.getId();
-		String uri = (id == null) ? null :
-				UriComponentsBuilder.newInstance()
-						.path(Mappings.API_V1_CUSTOMERS)
-						.path("/")
-						.path(Long.toString(id))
-						.toUriString();
+        Long id = customer.getId();
+        String uri = (id == null) ? null : UriComponentsBuilder.newInstance().path(Mappings.API_V1_CUSTOMERS).path("/").path(Long.toString(id)).toUriString();
 
-	    return CustomerDTO.CustomerDTOBuilder.getInstance()
-			    .setFirstname(customer.getFirstname())
-			    .setLastname(customer.getLastname())
-			    .setCustomerUrl(uri)
-			    .createCustomerDTO();
-	}
+        return CustomerDTO.CustomerDTOBuilder.getInstance().setFirstname(customer.getFirstname()).setLastname(customer.getLastname()).setCustomerUrl(uri).createCustomerDTO();
+    }
 
 }///:~

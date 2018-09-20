@@ -4,9 +4,7 @@
 package guru.springfamework.api.v1.model;
 
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -15,46 +13,49 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class VendorDTO {
 
-	@ApiModelProperty(value = "The name of the vendor.",
-			notes = "This peoperty is required.", required = true)
-	private String name;
+    @ApiModelProperty(value = "The name of the vendor.", notes = "This peoperty is required.", required = true)
+    private String name;
 
-	@ApiModelProperty(value = "Vendor's URL.",
-			notes = "The URL of the vendor.", required = false)
-	private String vendorUrl;
+    @ApiModelProperty(value = "Vendor's URL.", notes = "The URL of the vendor.", required = false)
+    private String vendorUrl;
 
-	VendorDTO() {}
+    VendorDTO() {
+    }
 
-	private VendorDTO(String name, String vendorUrl) {
-		this.name = name;
-		this.vendorUrl = vendorUrl;
-	}
+    private VendorDTO(String name, String vendorUrl) {
+        this.name = name;
+        this.vendorUrl = vendorUrl;
+    }
 
-	public static final class VendorDTOBuilder {
+    public String getName() {
+        return this.name;
+    }
 
-		private String name;
-		private String vendorUrl;
+    public static final class VendorDTOBuilder {
 
-		private VendorDTOBuilder() {
-		}
+        private String name;
+        private String vendorUrl;
 
-		public static final VendorDTOBuilder getInstance() {
-			return new VendorDTOBuilder();
-		}
+        private VendorDTOBuilder() {
+        }
 
-		public VendorDTOBuilder setName(String name) {
-			this.name = name;
-			return this;
-		}
+        public static final VendorDTOBuilder getInstance() {
+            return new VendorDTOBuilder();
+        }
 
-		public VendorDTOBuilder setVendorUrl(String vendorUrl) {
-			this.vendorUrl = vendorUrl;
-			return this;
-		}
+        public VendorDTOBuilder setName(String name) {
+            this.name = name;
+            return this;
+        }
 
-		public VendorDTO createVendorDTO() {
-			return new VendorDTO(name, vendorUrl);
-		}
-	}
+        public VendorDTOBuilder setVendorUrl(String vendorUrl) {
+            this.vendorUrl = vendorUrl;
+            return this;
+        }
+
+        public VendorDTO createVendorDTO() {
+            return new VendorDTO(name, vendorUrl);
+        }
+    }
 
 }///:~

@@ -27,251 +27,235 @@ import static org.mockito.Mockito.when;
 
 public class CustomerServiceTest {
 
-	@Mock
-	private ICustomerRepository customerRepository;
+    @Mock
+    private ICustomerRepository customerRepository;
 
-	private ICustomerMapper customerMapper;
+    private ICustomerMapper customerMapper;
 
-	private CustomerService customerService;
+    private CustomerService customerService;
 
-	private Random random;
-	private Long id;
+    private Random random;
+    private Long id;
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		this.customerMapper = ICustomerMapper.INSTANCE;
-		this.customerService = new CustomerService(this.customerRepository,
-				this.customerMapper);
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        this.customerMapper = ICustomerMapper.INSTANCE;
+        this.customerService = new CustomerService(this.customerRepository, this.customerMapper);
 
-		this.random = new Random(System.currentTimeMillis());
-		this.id = this.random.nextLong();
-	}
+        this.random = new Random(System.currentTimeMillis());
+        this.id = this.random.nextLong();
+    }
 
-	@Test
-	public void getAllCustomers() {
+    @Test
+    public void getAllCustomers() {
 
-		// Given
-		List<Customer> customers = Arrays.asList(new Customer(),
-				new Customer());
+        // Given
+        List<Customer> customers = Arrays.asList(new Customer(), new Customer());
 
-		when(this.customerRepository.findAll()).thenReturn(customers);
+        when(this.customerRepository.findAll()).thenReturn(customers);
 
-		// When
-		List<CustomerDTO> result = this.customerService.getAllCustomers();
+        // When
+        List<CustomerDTO> result = this.customerService.getAllCustomers();
 
-		// Then
-		assertThat(customers.size(), is(result.size()));
-	}
+        // Then
+        assertThat(customers.size(), is(result.size()));
+    }
 
-	@Test
-	public void getCustomerById() {
+    @Test
+    public void getCustomerById() {
 
-		// Given
-		Customer customer = new Customer();
-		customer.setId(this.id);
-		customer.setFirstname("");
-		customer.setLastname("");
+        // Given
+        Customer customer = new Customer();
+        customer.setId(this.id);
+        customer.setFirstname("");
+        customer.setLastname("");
 
-		when(this.customerRepository.findById(this.id)).thenReturn(
-				Optional.of(customer));
+        when(this.customerRepository.findById(this.id)).thenReturn(Optional.of(customer));
 
-		// When
-		CustomerDTO result = this.customerService.getCustomerById(this.id);
+        // When
+        CustomerDTO result = this.customerService.getCustomerById(this.id);
 
-		// Then
-		assertThat(result.getCustomerUrl(),
-				containsString("/" + this.id));
-	}
+        // Then
+        assertThat(result.getCustomerUrl(), containsString("/" + this.id));
+    }
 
-	@Test(expected = ResourceNotFoundException.class)
-	public void can_Generate_Resource_Not_Found_Exception_When_Fetch() {
+    @Test(expected = ResourceNotFoundException.class)
+    public void can_Generate_Resource_Not_Found_Exception_When_Fetch() {
 
-		// Given
-		when(this.customerRepository.findById(this.id))
-				.thenReturn(Optional.empty());
+        // Given
+        when(this.customerRepository.findById(this.id)).thenReturn(Optional.empty());
 
-		// When
-		this.customerService.getCustomerById(this.id);
-	}
+        // When
+        this.customerService.getCustomerById(this.id);
+    }
 
-	@Test
-	public void able_To_Create_A_New_Customer() {
+    @Test
+    public void able_To_Create_A_New_Customer() {
 
-		// Given
-		Customer customer = new Customer();
-		customer.setFirstname(UUID.randomUUID().toString());
-		customer.setLastname(UUID.randomUUID().toString());
+        // Given
+        Customer customer = new Customer();
+        customer.setFirstname(UUID.randomUUID().toString());
+        customer.setLastname(UUID.randomUUID().toString());
 
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
-		// Given
-		Customer newCreated = new Customer();
-		newCreated.setId(this.id);
-		newCreated.setFirstname(customer.getFirstname());
-		newCreated.setLastname(customer.getLastname());
+        // Given
+        Customer newCreated = new Customer();
+        newCreated.setId(this.id);
+        newCreated.setFirstname(customer.getFirstname());
+        newCreated.setLastname(customer.getLastname());
 
-		when(this.customerRepository.save(customer)).thenReturn(newCreated);
+        when(this.customerRepository.save(customer)).thenReturn(newCreated);
 
-		// When
-		CustomerDTO result = this.customerService.createNewCustomer(input);
+        // When
+        CustomerDTO result = this.customerService.createNewCustomer(input);
 
-		// Then
-		assertThat(result.getCustomerUrl(), endsWith("/" + this.id));
-		assertThat(result.getFirstname(), is(newCreated.getFirstname()));
-		assertThat(result.getLastname(), is(newCreated.getLastname()));
-	}
+        // Then
+        assertThat(result.getCustomerUrl(), endsWith("/" + this.id));
+        assertThat(result.getFirstname(), is(newCreated.getFirstname()));
+        assertThat(result.getLastname(), is(newCreated.getLastname()));
+    }
 
-	@Test
-	public void able_To_Save_A_New_Customer_Into_Database() {
+    @Test
+    public void able_To_Save_A_New_Customer_Into_Database() {
 
-		// Given
-		Customer customer = new Customer();
-		customer.setFirstname(UUID.randomUUID().toString());
-		customer.setLastname(UUID.randomUUID().toString());
+        // Given
+        Customer customer = new Customer();
+        customer.setFirstname(UUID.randomUUID().toString());
+        customer.setLastname(UUID.randomUUID().toString());
 
-		CustomerDTO input = CustomerDTO.CustomerDTOBuilder.getInstance()
-				.setFirstname(customer.getFirstname())
-				.setLastname(customer.getLastname())
-				.createCustomerDTO();
+        CustomerDTO input = CustomerDTO.CustomerDTOBuilder.getInstance().setFirstname(customer.getFirstname()).setLastname(customer.getLastname()).createCustomerDTO();
 
-		Customer savedCustomer = new Customer();
+        Customer savedCustomer = new Customer();
 
-		savedCustomer.setId(this.id);
-		savedCustomer.setFirstname(customer.getFirstname());
-		savedCustomer.setLastname(customer.getLastname());
+        savedCustomer.setId(this.id);
+        savedCustomer.setFirstname(customer.getFirstname());
+        savedCustomer.setLastname(customer.getLastname());
 
-		when(this.customerRepository.save(customer)).thenReturn(savedCustomer);
+        when(this.customerRepository.save(customer)).thenReturn(savedCustomer);
 
-		// When
-		CustomerDTO result = this.customerService.createNewCustomer(input);
+        // When
+        CustomerDTO result = this.customerService.createNewCustomer(input);
 
-		// Then
-		assertThat(result.getFirstname(), is(customer.getFirstname()));
-		assertThat(result.getLastname(), is(customer.getLastname()));
-	}
+        // Then
+        assertThat(result.getFirstname(), is(customer.getFirstname()));
+        assertThat(result.getLastname(), is(customer.getLastname()));
+    }
 
-	@Test
-	public void able_To_Update_An_Existing_Customer() {
+    @Test
+    public void able_To_Update_An_Existing_Customer() {
 
-		// Given
-		Customer customer = new Customer();
-		customer.setId(this.id);
-		customer.setFirstname(UUID.randomUUID().toString());
-		customer.setLastname(UUID.randomUUID().toString());
+        // Given
+        Customer customer = new Customer();
+        customer.setId(this.id);
+        customer.setFirstname(UUID.randomUUID().toString());
+        customer.setLastname(UUID.randomUUID().toString());
 
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
-		when(this.customerRepository.existsById(this.id)).thenReturn(true);
+        when(this.customerRepository.existsById(this.id)).thenReturn(true);
 
-		Customer savedCustomer = new Customer();
-		savedCustomer.setId(customer.getId());
-		savedCustomer.setFirstname(customer.getFirstname());
-		savedCustomer.setLastname(customer.getLastname());
+        Customer savedCustomer = new Customer();
+        savedCustomer.setId(customer.getId());
+        savedCustomer.setFirstname(customer.getFirstname());
+        savedCustomer.setLastname(customer.getLastname());
 
-		when(this.customerRepository.save(customer)).thenReturn(savedCustomer);
+        when(this.customerRepository.save(customer)).thenReturn(savedCustomer);
 
-		// When
-		CustomerDTO result = this.customerService.updateCustomer(this.id, input);
+        // When
+        CustomerDTO result = this.customerService.updateCustomer(this.id, input);
 
-		// Then
-		assertThat(result.getFirstname(), is(savedCustomer.getFirstname()));
-		assertThat(result.getLastname(), is(savedCustomer.getLastname()));
-		assertThat(result.getCustomerUrl(),
-				containsString("/" + this.id));
-	}
+        // Then
+        assertThat(result.getFirstname(), is(savedCustomer.getFirstname()));
+        assertThat(result.getLastname(), is(savedCustomer.getLastname()));
+        assertThat(result.getCustomerUrl(), containsString("/" + this.id));
+    }
 
-	@Test(expected = ResourceNotFoundException.class)
-	public void can_Generate_Resource_Not_Found_Exception_When_Update() {
+    @Test(expected = ResourceNotFoundException.class)
+    public void can_Generate_Resource_Not_Found_Exception_When_Update() {
 
-		// Given
-		when(this.customerRepository.existsById(this.id)).thenReturn(false);
+        // Given
+        when(this.customerRepository.existsById(this.id)).thenReturn(false);
 
-		// When
-		this.customerService.getCustomerById(this.id);
-	}
+        // When
+        this.customerService.getCustomerById(this.id);
+    }
 
-	@Test(expected = RuntimeException.class)
-	public void id_Should_Exist_In_Repository_When_Updating() {
+    @Test(expected = RuntimeException.class)
+    public void id_Should_Exist_In_Repository_When_Updating() {
 
-		// Given
-		CustomerDTO customerDTO = CustomerDTO.CustomerDTOBuilder
-				.getInstance()
-				.setFirstname("")
-				.setLastname("")
-				.createCustomerDTO();
+        // Given
+        CustomerDTO customerDTO = CustomerDTO.CustomerDTOBuilder.getInstance().setFirstname("").setLastname("").createCustomerDTO();
 
-		when(this.customerRepository.existsById(this.id)).thenReturn(false);
+        when(this.customerRepository.existsById(this.id)).thenReturn(false);
 
-		// When
-		this.customerService.updateCustomer(this.id, customerDTO);
-	}
+        // When
+        this.customerService.updateCustomer(this.id, customerDTO);
+    }
 
-	@Test
-	public void able_To_Patch_An_Existing_Customer_With_First_Name() {
+    @Test
+    public void able_To_Patch_An_Existing_Customer_With_First_Name() {
 
-		// Given
-		Customer customer = new Customer();
-		customer.setId(this.id);
-		String firstname = UUID.randomUUID().toString();
-		customer.setFirstname(firstname);
+        // Given
+        Customer customer = new Customer();
+        customer.setId(this.id);
+        String firstname = UUID.randomUUID().toString();
+        customer.setFirstname(firstname);
 
-		CustomerDTO customerDTO = this.customerMapper.toCustomerDTO(customer);
+        CustomerDTO customerDTO = this.customerMapper.toCustomerDTO(customer);
 
-		Customer existing = new Customer();
-		existing.setId(this.id);
-		String originalFirstname = UUID.randomUUID().toString();
-		String originalLastname = UUID.randomUUID().toString();
-		existing.setFirstname(originalFirstname);
-		existing.setLastname(originalLastname);
+        Customer existing = new Customer();
+        existing.setId(this.id);
+        String originalFirstname = UUID.randomUUID().toString();
+        String originalLastname = UUID.randomUUID().toString();
+        existing.setFirstname(originalFirstname);
+        existing.setLastname(originalLastname);
 
-		when(this.customerRepository.findById(this.id))
-				.thenReturn(Optional.of(existing));
+        when(this.customerRepository.findById(this.id)).thenReturn(Optional.of(existing));
 
-		when(this.customerRepository.save(existing)).thenReturn(existing);
+        when(this.customerRepository.save(existing)).thenReturn(existing);
 
-		// When
-		CustomerDTO result = this.customerService.patchCustomer(this.id,
-				customerDTO);
+        // When
+        CustomerDTO result = this.customerService.patchCustomer(this.id, customerDTO);
 
-		// Then
-		assertThat(result.getLastname(), is(existing.getLastname()));
-		assertThat(existing.getFirstname(), is(customer.getFirstname()));
-	}
+        // Then
+        assertThat(result.getLastname(), is(existing.getLastname()));
+        assertThat(existing.getFirstname(), is(customer.getFirstname()));
+    }
 
-	@Test
-	public void not_Able_To_Patch_Null() {
+    @Test
+    public void not_Able_To_Patch_Null() {
 
-		// When
-		this.customerService.patchCustomer(this.id, null);
+        // When
+        this.customerService.patchCustomer(this.id, null);
 
-		// Then
-		verify(this.customerRepository, never()).findById(anyLong());
-	}
+        // Then
+        verify(this.customerRepository, never()).findById(anyLong());
+    }
 
-	@Test(expected = ResourceNotFoundException.class)
-	public void can_Generate_Resource_Not_Found_Exception_When_Patching() {
+    @Test(expected = ResourceNotFoundException.class)
+    public void can_Generate_Resource_Not_Found_Exception_When_Patching() {
 
-		// Given
-		when(this.customerRepository.findById(this.id)).thenReturn(
-				Optional.empty());
+        // Given
+        when(this.customerRepository.findById(this.id)).thenReturn(Optional.empty());
 
-		// When
-		this.customerService.getCustomerById(this.id);
-	}
+        // When
+        this.customerService.getCustomerById(this.id);
+    }
 
-	@Test
-	public void able_Delete_An_Customer_By_Id() {
+    @Test
+    public void able_Delete_An_Customer_By_Id() {
 
-		// Given
+        // Given
 
 
-		// When
-		this.customerService.deleteCustomer(this.id);
+        // When
+        this.customerService.deleteCustomer(this.id);
 
-		// Then
-		verify(this.customerRepository).deleteById(this.id);
+        // Then
+        verify(this.customerRepository).deleteById(this.id);
 
-	}
+    }
 
 }///:~

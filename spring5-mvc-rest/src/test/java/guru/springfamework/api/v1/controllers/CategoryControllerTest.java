@@ -35,115 +35,88 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class CategoryControllerTest {
 
-	@Mock
-	private ICategoryService categoryService;
+    @Mock
+    private ICategoryService categoryService;
 
-	/*
-	 * @InjectMocks creates an instance of the class and injects the mocks that
-	 * are created with the @Mock (or @Spy) annotations into this instance
-	 */
-	@InjectMocks
-	private CategoryController categoryController;
+    /*
+     * @InjectMocks creates an instance of the class and injects the mocks that
+     * are created with the @Mock (or @Spy) annotations into this instance
+     */
+    @InjectMocks
+    private CategoryController categoryController;
 
-	private Random random;
+    private Random random;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	private String name_0;
-	private String name_1;
+    private String name_0;
+    private String name_1;
 
-	private Long id_0;
-	private Long id_1;
+    private Long id_0;
+    private Long id_1;
 
-	@Before
-	public void setUp() {
+    @Before
+    public void setUp() {
 
-		MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.initMocks(this);
 
-		this.random = new Random(System.currentTimeMillis());
+        this.random = new Random(System.currentTimeMillis());
 
-		RestResponseEntityExceptionHandler exceptionAdvice =
-				new RestResponseEntityExceptionHandler();
-		this.mockMvc = MockMvcBuilders.standaloneSetup(this.categoryController)
-				.setControllerAdvice(exceptionAdvice)
-				.build();
+        RestResponseEntityExceptionHandler exceptionAdvice = new RestResponseEntityExceptionHandler();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(this.categoryController).setControllerAdvice(exceptionAdvice).build();
 
-		this.name_0 = UUID.randomUUID().toString();
-		this.name_1 = UUID.randomUUID().toString();
+        this.name_0 = UUID.randomUUID().toString();
+        this.name_1 = UUID.randomUUID().toString();
 
-		this.id_0 = this.random.nextLong();
-		this.id_1 = this.random.nextLong();
-	}
+        this.id_0 = this.random.nextLong();
+        this.id_1 = this.random.nextLong();
+    }
 
-	@Test
-	public void has_Endpoint_For_All_Categories() throws Exception {
+    @Test
+    public void has_Endpoint_For_All_Categories() throws Exception {
 
-		// Given
-		CategoryDTO category_0 = CategoryDTO.CategoryDTOBuilder.getInstance()
-				.setId(this.id_0)
-				.setName(this.name_0)
-				.createCategoryDTO();
+        // Given
+        CategoryDTO category_0 = CategoryDTO.CategoryDTOBuilder.getInstance().setId(this.id_0).setName(this.name_0).createCategoryDTO();
 
-		CategoryDTO category_1 = CategoryDTO.CategoryDTOBuilder.getInstance()
-				.setId(this.id_1)
-				.setName(this.name_1)
-				.createCategoryDTO();
+        CategoryDTO category_1 = CategoryDTO.CategoryDTOBuilder.getInstance().setId(this.id_1).setName(this.name_1).createCategoryDTO();
 
-		List<CategoryDTO> categories = Arrays.asList(category_0, category_1);
+        List<CategoryDTO> categories = Arrays.asList(category_0, category_1);
 
-		when(this.categoryService.getAllCategories()).thenReturn(categories);
+        when(this.categoryService.getAllCategories()).thenReturn(categories);
 
-		// When
-		this.mockMvc.perform(get(Mappings.API_V1_CATEGORIES)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.categories", hasSize(2)))
-				.andExpect(jsonPath("$.categories[*].name",
-						containsInAnyOrder(this.name_0, this.name_1)))
-				.andExpect(jsonPath("$.categories[*].id",
-						containsInAnyOrder(this.id_0, this.id_1)));
+        // When
+        this.mockMvc.perform(get(Mappings.API_V1_CATEGORIES).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.categories", hasSize(2))).andExpect(jsonPath("$.categories[*].name", containsInAnyOrder(this.name_0, this.name_1))).andExpect(jsonPath("$.categories[*].id", containsInAnyOrder(this.id_0, this.id_1)));
 
-	}// End of has_Endpoint_For_All_Categories()
+    }// End of has_Endpoint_For_All_Categories()
 
-	@Test
-	public void has_Endpoint_For_Category_By_Name() throws Exception {
-		
-		// Given
+    @Test
+    public void has_Endpoint_For_Category_By_Name() throws Exception {
+
+        // Given
         String name = this.name_0;
         String uri = Mappings.API_V1_CATEGORIES + "/" + name;
-		Long id = this.id_0;
+        Long id = this.id_0;
 
-		CategoryDTO category = CategoryDTO.CategoryDTOBuilder.getInstance()
-				.setId(id)
-				.setName(name)
-				.createCategoryDTO();
+        CategoryDTO category = CategoryDTO.CategoryDTOBuilder.getInstance().setId(id).setName(name).createCategoryDTO();
 
         when(this.categoryService.getCategoryByName(name)).thenReturn(category);
 
-		// When
-		this.mockMvc.perform(get(uri)
-				        .contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.name", is(name)))
-				.andExpect(jsonPath("$.id", is(id)));
+        // When
+        this.mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.name", is(name))).andExpect(jsonPath("$.id", is(id)));
 
-	}// has_Endpoint_For_Category_By_Name()
+    }// has_Endpoint_For_Category_By_Name()
 
-	@Test
-	public void able_To_Dispatch_Resource_Not_Found_Exception()
-			throws Exception {
+    @Test
+    public void able_To_Dispatch_Resource_Not_Found_Exception() throws Exception {
 
-		// Given
-		String uri = Mappings.API_V1_CATEGORIES + "/" + this.name_0;
+        // Given
+        String uri = Mappings.API_V1_CATEGORIES + "/" + this.name_0;
 
-		// When
-		when(this.categoryService.getCategoryByName(this.name_0))
-				.thenThrow(ResourceNotFoundException.class);
+        // When
+        when(this.categoryService.getCategoryByName(this.name_0)).thenThrow(ResourceNotFoundException.class);
 
-		// Then
-		this.mockMvc.perform(get(uri)
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
-	}
+        // Then
+        this.mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
 
 }///:~

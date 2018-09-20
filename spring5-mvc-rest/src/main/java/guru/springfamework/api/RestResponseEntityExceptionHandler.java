@@ -62,38 +62,28 @@ import java.util.Date;
  * be returned
  */
 @RequestMapping(produces = "application/json; charset=UTF-8")
-public class RestResponseEntityExceptionHandler extends
-		ResponseEntityExceptionHandler {
+public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-	/*
-	 * @ExceptionHandler allows to define a method that handles exceptions
-	 * If not using @ControllerAdvice, the code for handling these exceptions
-	 * would be in the controllers themselves
-	 */
-	@ExceptionHandler({ResourceNotFoundException.class})
-	public ResponseEntity<Object> handleResourceNotFoundException(
-			Exception exception, WebRequest webRequest) {
+    /*
+     * @ExceptionHandler allows to define a method that handles exceptions
+     * If not using @ControllerAdvice, the code for handling these exceptions
+     * would be in the controllers themselves
+     */
+    @ExceptionHandler({ResourceNotFoundException.class})
+    public ResponseEntity<Object> handleResourceNotFoundException(Exception exception, WebRequest webRequest) {
 
-		String errMsg = "Resource not found! " + exception.getMessage();
-		return new ResponseEntity<>(errMsg, new HttpHeaders(),
-				HttpStatus.NOT_FOUND);
-	}
+        String errMsg = "Resource not found! " + exception.getMessage();
+        return new ResponseEntity<>(errMsg, new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
 
-	@ExceptionHandler({ConstraintViolationException.class})
-	public ResponseEntity<ApiError> handleConstraintViolationException(
-			ConstraintViolationException exception, WebRequest webRequest) {
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<ApiError> handleConstraintViolationException(ConstraintViolationException exception, WebRequest webRequest) {
 
-		String details = exception.getConstraintViolations().stream()
-				.map(cve -> "'" + cve.getPropertyPath() + "' " + cve.getMessage())
-				.reduce("", (s1, s2) -> s1 + s2);
+        String details = exception.getConstraintViolations().stream().map(cve -> "'" + cve.getPropertyPath() + "' " + cve.getMessage()).reduce("", (s1, s2) -> s1 + s2);
 
-		ApiError apiError = ApiError.ApiErrorBuilder.getInstance()
-				.setTimestamp(new Date())
-				.setMessage("Data field validation failed!")
-				.setDetails(details)
-				.createApiError();
+        ApiError apiError = ApiError.ApiErrorBuilder.getInstance().setTimestamp(new Date()).setMessage("Data field validation failed!").setDetails(details).createApiError();
 
-		return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-	}
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
 
 }///:~

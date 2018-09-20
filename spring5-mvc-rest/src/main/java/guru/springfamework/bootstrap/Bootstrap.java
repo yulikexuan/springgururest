@@ -31,115 +31,110 @@ import org.springframework.stereotype.Component;
 @Component
 public class Bootstrap implements CommandLineRunner {
 
-	private final ICategoryRepository categoryRepository;
-	private final ICustomerRepository customerRepository;
-	private final IVendorRepository vendorRepository;
+    private final ICategoryRepository categoryRepository;
+    private final ICustomerRepository customerRepository;
+    private final IVendorRepository vendorRepository;
 
-	public Bootstrap(ICategoryRepository categoryRepository,
-	                 ICustomerRepository customerRepository,
-	                 IVendorRepository vendorRepository) {
-		
-		this.categoryRepository = categoryRepository;
-		this.customerRepository = customerRepository;
-		this.vendorRepository = vendorRepository;
-	}
+    public Bootstrap(ICategoryRepository categoryRepository, ICustomerRepository customerRepository, IVendorRepository vendorRepository) {
 
-	/*
-	 * Load up some classed
-	 */
-	@Override
-	public void run(String... args) {
-		this.loadCategories();
-		this.loadCustomers();
-		this.loadVendors();
-	}// End of run()
+        this.categoryRepository = categoryRepository;
+        this.customerRepository = customerRepository;
+        this.vendorRepository = vendorRepository;
+    }
 
-	private void loadCategories() {
+    /*
+     * Load up some classed
+     */
+    @Override
+    public void run(String... args) {
+        this.loadCategories();
+        this.loadCustomers();
+        this.loadVendors();
+    }// End of run()
 
-		Category fruits = new Category();
-		fruits.setName("Fruits");
+    private void loadCategories() {
 
-		Category dried = new Category();
-		dried.setName("Dried");
+        Category fruits = new Category();
+        fruits.setName("Fruits");
 
-		Category fresh = new Category();
-		fresh.setName("Fresh");
+        Category dried = new Category();
+        dried.setName("Dried");
 
-		Category exotic = new Category();
-		exotic.setName("Exotic");
+        Category fresh = new Category();
+        fresh.setName("Fresh");
 
-		Category nuts = new Category();
-		nuts.setName("Nuts");
+        Category exotic = new Category();
+        exotic.setName("Exotic");
 
-		this.categoryRepository.save(fruits);
-		this.categoryRepository.save(dried);
-		this.categoryRepository.save(fresh);
-		this.categoryRepository.save(exotic);
-		this.categoryRepository.save(nuts);
+        Category nuts = new Category();
+        nuts.setName("Nuts");
 
-		System.out.println(">>>>>>> Categories loaded = " +
-				this.categoryRepository.count());
-	}
+        this.categoryRepository.save(fruits);
+        this.categoryRepository.save(dried);
+        this.categoryRepository.save(fresh);
+        this.categoryRepository.save(exotic);
+        this.categoryRepository.save(nuts);
 
-	private void loadCustomers() {
+        System.out.println(">>>>>>> Categories loaded = " + this.categoryRepository.count());
+    }
 
-		Customer customer1 = new Customer();
-		customer1.setId(1L);
-		customer1.setFirstname("Michale");
-		customer1.setLastname("Weston");
-		this.customerRepository.save(customer1);
+    private void loadCustomers() {
 
-		Customer customer2 = new Customer();
-		customer2.setId(2l);
-		customer2.setFirstname("Sam");
-		customer2.setLastname("Axe");
-		this.customerRepository.save(customer2);
+        Customer customer1 = new Customer();
+        customer1.setId(1L);
+        customer1.setFirstname("Michale");
+        customer1.setLastname("Weston");
+        this.customerRepository.save(customer1);
 
-		Customer customer3 = new Customer();
-		customer3.setId(3l);
-		customer3.setFirstname("Bill");
-		customer3.setLastname("Gates");
-		this.customerRepository.save(customer3);
+        Customer customer2 = new Customer();
+        customer2.setId(2l);
+        customer2.setFirstname("Sam");
+        customer2.setLastname("Axe");
+        this.customerRepository.save(customer2);
 
-		Customer customer4 = new Customer();
-		customer4.setId(4l);
-		customer4.setFirstname("Jobs");
-		customer4.setLastname("Steve");
-		this.customerRepository.save(customer4);
+        Customer customer3 = new Customer();
+        customer3.setId(3l);
+        customer3.setFirstname("Bill");
+        customer3.setLastname("Gates");
+        this.customerRepository.save(customer3);
 
-		System.out.println(">>>>>>> Customers Loaded = " +
-				this.customerRepository.count());
-	}
+        Customer customer4 = new Customer();
+        customer4.setId(4l);
+        customer4.setFirstname("Jobs");
+        customer4.setLastname("Steve");
+        this.customerRepository.save(customer4);
 
-	private void loadVendors() {
+        System.out.println(">>>>>>> Customers Loaded = " + this.customerRepository.count());
+    }
 
-		Vendor vendor1 = new Vendor();
-		vendor1.setId(1L);
-		vendor1.setName("Western Tasty Fruits Ltd.");
-		this.vendorRepository.save(vendor1);
+    private void loadVendors() {
 
-		Vendor vendor2 = new Vendor();
-		vendor2.setId(2L);
-		vendor2.setName("Exotic Fruits Company");
-		this.vendorRepository.save(vendor2);
+        Vendor vendor1 = new Vendor();
+        vendor1.setId(1L);
+        vendor1.setName("Western Tasty Fruits Ltd.");
+        this.vendorRepository.save(vendor1);
 
-		Vendor vendor3 = new Vendor();
-		vendor3.setId(3L);
-		vendor3.setName("Home Fruits");
-		this.vendorRepository.save(vendor3);
+        Vendor vendor2 = new Vendor();
+        vendor2.setId(2L);
+        vendor2.setName("Exotic Fruits Company");
+        this.vendorRepository.save(vendor2);
 
-		Vendor vendor4 = new Vendor();
-		vendor4.setId(4L);
-		vendor4.setName("Fun Fresh Fruits Ltd.");
-		this.vendorRepository.save(vendor4);
+        Vendor vendor3 = new Vendor();
+        vendor3.setId(3L);
+        vendor3.setName("Home Fruits");
+        this.vendorRepository.save(vendor3);
 
-		Vendor vendor5 = new Vendor();
-		vendor5.setId(5L);
-		vendor5.setName("Nuts for Nuts Company");
-		this.vendorRepository.save(vendor5);
+        Vendor vendor4 = new Vendor();
+        vendor4.setId(4L);
+        vendor4.setName("Fun Fresh Fruits Ltd.");
+        this.vendorRepository.save(vendor4);
 
-		System.out.println(">>>>>>> Vendors Loaded = " +
-				this.vendorRepository.count());
-	}
+        Vendor vendor5 = new Vendor();
+        vendor5.setId(5L);
+        vendor5.setName("Nuts for Nuts Company");
+        this.vendorRepository.save(vendor5);
+
+        System.out.println(">>>>>>> Vendors Loaded = " + this.vendorRepository.count());
+    }
 
 }///:~

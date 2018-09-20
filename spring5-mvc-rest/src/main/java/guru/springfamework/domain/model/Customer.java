@@ -16,11 +16,11 @@ import javax.persistence.Id;
 @Entity
 public class Customer {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private String firstname;
-	private String lastname;
+    private String firstname;
+    private String lastname;
 
 }///:~

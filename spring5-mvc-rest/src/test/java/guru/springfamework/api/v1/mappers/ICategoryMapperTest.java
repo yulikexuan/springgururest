@@ -15,30 +15,30 @@ import static org.junit.Assert.*;
 
 public class ICategoryMapperTest {
 
-	private static final String NAME = "Joe";
-	private static final Long ID = 1L;
+    private static final String NAME = "Joe";
+    private static final Long ID = 1L;
 
-	private ICategoryMapper categoryMapper;
+    private ICategoryMapper categoryMapper;
 
-	@Before
-	public void setUp() {
-		this.categoryMapper = ICategoryMapper.INSTANCE;
-	}
+    @Before
+    public void setUp() {
+        this.categoryMapper = ICategoryMapper.INSTANCE;
+    }
 
-	@Test
-	public void able_To_Transform_Category_To_CategoryDTO() {
+    @Test
+    public void able_To_Transform_Category_To_CategoryDTO() {
 
-		// Given
-		Category category = new Category();
-		category.setId(ID);
-		category.setName(NAME);
+        // Given
+        Category category = new Category();
+        category.setId(ID);
+        category.setName(NAME);
 
-		// When
-		CategoryDTO dto = this.categoryMapper.toCategoryDTO(category);
+        // When
+        CategoryDTO dto = this.categoryMapper.toCategoryDTO(category);
 
-		// Then
-		assertThat(dto.getId(), is(ID));
-		assertThat(dto.getName(), is(NAME));
-	}
+        // Then
+        assertThat(dto.getId(), is(ID));
+        assertThat(dto.getName(), is(NAME));
+    }
 
 }///:~

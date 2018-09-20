@@ -11,7 +11,8 @@ import java.util.List;
 
 public interface ICategoryService {
 
-	List<CategoryDTO> getAllCategories();
-	CategoryDTO getCategoryByName(String name);
+    List<CategoryDTO> getAllCategories();
+
+    CategoryDTO getCategoryByName(String name);
 
 }///:~

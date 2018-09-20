@@ -13,14 +13,14 @@ import java.util.List;
 
 public final class CategoryListDTO {
 
-	private final List<CategoryDTO> categories = new ArrayList<>();
+    private final List<CategoryDTO> categories = new ArrayList<>();
 
-	public CategoryListDTO(@NonNull List<CategoryDTO> categories) {
-		this.categories.addAll(categories);
-	}
+    public CategoryListDTO(@NonNull List<CategoryDTO> categories) {
+        this.categories.addAll(categories);
+    }
 
-	public final List<CategoryDTO> getCategories() {
-		return Collections.unmodifiableList(this.categories);
-	}
+    public final List<CategoryDTO> getCategories() {
+        return Collections.unmodifiableList(this.categories);
+    }
 
 }///:~

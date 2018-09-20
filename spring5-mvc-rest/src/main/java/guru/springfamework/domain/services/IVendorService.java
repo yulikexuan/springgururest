@@ -11,13 +11,16 @@ import java.util.List;
 
 public interface IVendorService {
 
-	List<VendorDTO> getAllVendors();
+    List<VendorDTO> getAllVendors();
 
-	VendorDTO getVendorById(Long id);
-	VendorDTO createNewVendor(VendorDTO vendorDTO);
-	VendorDTO updateVendor(Long id, VendorDTO vendorDTO);
-	VendorDTO patchVendor(Long id, VendorDTO vendorDTO);
+    VendorDTO getVendorById(Long id);
 
-	void deleteVendor(Long id);
+    VendorDTO createNewVendor(VendorDTO vendorDTO);
+
+    VendorDTO updateVendor(Long id, VendorDTO vendorDTO);
+
+    VendorDTO patchVendor(Long id, VendorDTO vendorDTO);
+
+    void deleteVendor(Long id);
 
 }///:~

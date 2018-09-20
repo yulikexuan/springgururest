@@ -41,289 +41,224 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class CustomerControllerTest {
 
-	@Mock
-	private ICustomerService customerService;
-
-	private ICustomerMapper customerMapper;
-	private MockMvc mockMvc;
-	private Random random;
+    @Mock
+    private ICustomerService customerService;
 
-	@InjectMocks
-	private CustomerController customerController;
-	private Long id;
-	private Long id_1;
-
-	private String idUri;
-
-	@Before
-	public void setUp() {
+    private ICustomerMapper customerMapper;
+    private MockMvc mockMvc;
+    private Random random;
 
-		MockitoAnnotations.initMocks(this);
+    @InjectMocks
+    private CustomerController customerController;
+    private Long id;
+    private Long id_1;
 
-		this.random = new Random(System.currentTimeMillis());
+    private String idUri;
 
-		RestResponseEntityExceptionHandler exceptionAdvice =
-				new RestResponseEntityExceptionHandler();
-		this.mockMvc = MockMvcBuilders.standaloneSetup(this.customerController)
-				.setControllerAdvice(exceptionAdvice)
-				.build();
+    @Before
+    public void setUp() {
 
-		this.customerMapper = ICustomerMapper.INSTANCE;
+        MockitoAnnotations.initMocks(this);
 
-		this.id = this.random.nextLong();
-		this.id_1 = this.random.nextLong();
+        this.random = new Random(System.currentTimeMillis());
 
-		this.idUri = UriComponentsBuilder
-				.fromUriString(Mappings.API_V1_CUSTOMERS)
-				.path("/")
-				.path(Long.toString(this.id))
-				.toUriString();
-	}
+        RestResponseEntityExceptionHandler exceptionAdvice = new RestResponseEntityExceptionHandler();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(this.customerController).setControllerAdvice(exceptionAdvice).build();
 
-	@Test
-	public void getAllCustomers() throws Exception {
+        this.customerMapper = ICustomerMapper.INSTANCE;
 
-		// Given
-		CustomerDTO customerDTO_0 = CustomerDTO.CustomerDTOBuilder
-				.getInstance()
-				.createCustomerDTO();
-		CustomerDTO customerDTO_1 = CustomerDTO.CustomerDTOBuilder
-				.getInstance()
-				.createCustomerDTO();
+        this.id = this.random.nextLong();
+        this.id_1 = this.random.nextLong();
 
-		List<CustomerDTO> customers = Arrays.asList(customerDTO_0,
-				customerDTO_1);
+        this.idUri = UriComponentsBuilder.fromUriString(Mappings.API_V1_CUSTOMERS).path("/").path(Long.toString(this.id)).toUriString();
+    }
 
-		when(this.customerService.getAllCustomers()).thenReturn(customers);
+    @Test
+    public void getAllCustomers() throws Exception {
 
-		// When
-		this.mockMvc.perform(get(Mappings.API_V1_CUSTOMERS)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.customers", hasSize(2)));
-	}
+        // Given
+        CustomerDTO customerDTO_0 = CustomerDTO.CustomerDTOBuilder.getInstance().createCustomerDTO();
+        CustomerDTO customerDTO_1 = CustomerDTO.CustomerDTOBuilder.getInstance().createCustomerDTO();
 
-	@Test
-	public void getCustomerById() throws Exception {
+        List<CustomerDTO> customers = Arrays.asList(customerDTO_0, customerDTO_1);
 
-		// Given
-		Customer customer = new Customer();
-		customer.setId(this.id);
+        when(this.customerService.getAllCustomers()).thenReturn(customers);
 
-		CustomerDTO customerDTO = this.customerMapper.toCustomerDTO(customer);
+        // When
+        this.mockMvc.perform(get(Mappings.API_V1_CUSTOMERS).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.customers", hasSize(2)));
+    }
 
-		when(this.customerService.getCustomerById(this.id)).thenReturn(
-				customerDTO);
+    @Test
+    public void getCustomerById() throws Exception {
 
-		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-				.get(this.idUri)
-				.contentType(MediaType.APPLICATION_JSON);
+        // Given
+        Customer customer = new Customer();
+        customer.setId(this.id);
 
-		// When
-		this.mockMvc.perform(requestBuilder)
-				.andExpect(jsonPath("$.customerUrl",
-						endsWith(Long.toString(id))))
-				.andExpect(jsonPath("$.customerUrl",
-						startsWith(Mappings.API_V1_CUSTOMERS)));
-	}
+        CustomerDTO customerDTO = this.customerMapper.toCustomerDTO(customer);
 
-	@Test
-	public void able_To_Dispatch_Resource_Not_Found_Exception_When_Fetching()
-			throws Exception {
+        when(this.customerService.getCustomerById(this.id)).thenReturn(customerDTO);
 
-		// Given
-		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-				.get(this.idUri)
-				.contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(this.idUri).contentType(MediaType.APPLICATION_JSON);
 
-		when(this.customerService.getCustomerById(this.id))
-				.thenThrow(ResourceNotFoundException.class);
+        // When
+        this.mockMvc.perform(requestBuilder).andExpect(jsonPath("$.customerUrl", endsWith(Long.toString(id)))).andExpect(jsonPath("$.customerUrl", startsWith(Mappings.API_V1_CUSTOMERS)));
+    }
 
-		// When & Then
-		this.mockMvc.perform(requestBuilder)
-				.andExpect(status().isNotFound());
-	}
+    @Test
+    public void able_To_Dispatch_Resource_Not_Found_Exception_When_Fetching() throws Exception {
 
-	@Test
-	public void able_To_Handle_Post_Of_New_Customer() throws Exception {
+        // Given
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(this.idUri).contentType(MediaType.APPLICATION_JSON);
 
-		// Given
-		String firstname = "Jobs";
-		String lastname = "Steve";
-		Customer customer = new Customer();
-		customer.setFirstname(firstname);
-		customer.setLastname(lastname);
+        when(this.customerService.getCustomerById(this.id)).thenThrow(ResourceNotFoundException.class);
 
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
-		String rawInput = ObjectToJsonMapper.toJson(input);
+        // When & Then
+        this.mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
+    }
 
-		customer.setId(this.id);
+    @Test
+    public void able_To_Handle_Post_Of_New_Customer() throws Exception {
 
-		CustomerDTO savedCustomer = this.customerMapper.toCustomerDTO(customer);
+        // Given
+        String firstname = "Jobs";
+        String lastname = "Steve";
+        Customer customer = new Customer();
+        customer.setFirstname(firstname);
+        customer.setLastname(lastname);
 
-		when(this.customerService.createNewCustomer(input))
-				.thenReturn(savedCustomer);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        String rawInput = ObjectToJsonMapper.toJson(input);
 
-		String uriStr = getUriStr(id);
+        customer.setId(this.id);
 
-		// When & Then
-		MockHttpServletRequestBuilder requestBuilder =
-				MockMvcRequestBuilders.post(Mappings.API_V1_CUSTOMERS)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(rawInput);
+        CustomerDTO savedCustomer = this.customerMapper.toCustomerDTO(customer);
 
-		ResultActions resultActions = this.mockMvc.perform(requestBuilder);
+        when(this.customerService.createNewCustomer(input)).thenReturn(savedCustomer);
 
-		resultActions.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.firstname", is(firstname)))
-				.andExpect(jsonPath("$.lastname", is(lastname)))
-				.andExpect(jsonPath("$.customerUrl", is(uriStr)));
+        String uriStr = getUriStr(id);
 
-	}// able_To_Handle_Post_Of_New_Customer()
+        // When & Then
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(Mappings.API_V1_CUSTOMERS).contentType(MediaType.APPLICATION_JSON).content(rawInput);
 
-	@Test
-	public void able_To_Handle_Put_Of_Existing_Customer() throws Exception {
+        ResultActions resultActions = this.mockMvc.perform(requestBuilder);
 
-		// Given
-		String firstname = "Jobs";
-		String lastname = "Steve";
-		Customer customer = new Customer();
-		customer.setFirstname(firstname);
-		customer.setLastname(lastname);
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        resultActions.andExpect(status().isCreated()).andExpect(jsonPath("$.firstname", is(firstname))).andExpect(jsonPath("$.lastname", is(lastname))).andExpect(jsonPath("$.customerUrl", is(uriStr)));
 
-		String rawInput = ObjectToJsonMapper.toJson(input);
+    }// able_To_Handle_Post_Of_New_Customer()
 
-		customer.setId(this.id);
-		CustomerDTO after = this.customerMapper.toCustomerDTO(customer);
+    @Test
+    public void able_To_Handle_Put_Of_Existing_Customer() throws Exception {
 
-		when(this.customerService.updateCustomer(this.id, input))
-				.thenReturn(after);
+        // Given
+        String firstname = "Jobs";
+        String lastname = "Steve";
+        Customer customer = new Customer();
+        customer.setFirstname(firstname);
+        customer.setLastname(lastname);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
-		// When & Then
-		MockHttpServletRequestBuilder requestBuilder =
-				MockMvcRequestBuilders.put(this.idUri)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(rawInput);
+        String rawInput = ObjectToJsonMapper.toJson(input);
 
-		ResultActions resultActions = this.mockMvc.perform(requestBuilder);
+        customer.setId(this.id);
+        CustomerDTO after = this.customerMapper.toCustomerDTO(customer);
 
-		resultActions.andExpect(status().isOk())
-				.andExpect(jsonPath("$.firstname", is(firstname)))
-				.andExpect(jsonPath("$.lastname", is(lastname)))
-				.andExpect(jsonPath("$.customerUrl", is(this.idUri)));
+        when(this.customerService.updateCustomer(this.id, input)).thenReturn(after);
 
-	}// able_To_Handle_Put_Of_Existing_Customer()
+        // When & Then
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(this.idUri).contentType(MediaType.APPLICATION_JSON).content(rawInput);
 
-	@Test
-	public void able_To_Dispatch_Resource_Not_Found_Exception_When_Updating()
-			throws Exception {
+        ResultActions resultActions = this.mockMvc.perform(requestBuilder);
 
-		// Given
-		Customer customer = new Customer();
-		customer.setId(this.id);
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        resultActions.andExpect(status().isOk()).andExpect(jsonPath("$.firstname", is(firstname))).andExpect(jsonPath("$.lastname", is(lastname))).andExpect(jsonPath("$.customerUrl", is(this.idUri)));
 
-		String rawInput = ObjectToJsonMapper.toJson(input);
+    }// able_To_Handle_Put_Of_Existing_Customer()
 
-		when(this.customerService.updateCustomer(this.id, input))
-				.thenThrow(ResourceNotFoundException.class);
+    @Test
+    public void able_To_Dispatch_Resource_Not_Found_Exception_When_Updating() throws Exception {
 
-		MockHttpServletRequestBuilder requestBuilder =
-				MockMvcRequestBuilders.put(this.idUri)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(rawInput);
+        // Given
+        Customer customer = new Customer();
+        customer.setId(this.id);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
-		// When & Then
-		this.mockMvc.perform(requestBuilder)
-				.andExpect(status().isNotFound());
-	}
+        String rawInput = ObjectToJsonMapper.toJson(input);
 
-	@Test
-	public void able_To_Handle_Patch_Of_Existing_Customer() throws Exception {
+        when(this.customerService.updateCustomer(this.id, input)).thenThrow(ResourceNotFoundException.class);
 
-		// Given
-		String firstname = "Mike";
-		String lastname = "Lee";
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(this.idUri).contentType(MediaType.APPLICATION_JSON).content(rawInput);
 
-		Customer customer = new Customer();
-		customer.setFirstname(firstname);
+        // When & Then
+        this.mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
+    }
 
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
-		String rawInput = ObjectToJsonMapper.toJson(input);
+    @Test
+    public void able_To_Handle_Patch_Of_Existing_Customer() throws Exception {
 
-		Customer after = new Customer();
-		after.setId(this.id);
-		after.setFirstname(firstname);
-		after.setLastname(lastname);
+        // Given
+        String firstname = "Mike";
+        String lastname = "Lee";
 
-		CustomerDTO result = this.customerMapper.toCustomerDTO(after);
+        Customer customer = new Customer();
+        customer.setFirstname(firstname);
 
-		when(this.customerService.patchCustomer(this.id, input))
-				.thenReturn(result);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        String rawInput = ObjectToJsonMapper.toJson(input);
 
-		MockHttpServletRequestBuilder requestBuilder =
-				MockMvcRequestBuilders.patch(this.idUri)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(rawInput);
+        Customer after = new Customer();
+        after.setId(this.id);
+        after.setFirstname(firstname);
+        after.setLastname(lastname);
 
-		// When & Then
-		ResultActions resultActions = this.mockMvc.perform(requestBuilder);
+        CustomerDTO result = this.customerMapper.toCustomerDTO(after);
 
-		resultActions.andExpect(status().isOk())
-				.andExpect(jsonPath("$.firstname", is(firstname)))
-				.andExpect(jsonPath("$.lastname", is(lastname)))
-				.andExpect(jsonPath("$.customerUrl", is(this.idUri)));
+        when(this.customerService.patchCustomer(this.id, input)).thenReturn(result);
 
-	}// able_To_Handle_Put_Of_Existing_Customer()
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.patch(this.idUri).contentType(MediaType.APPLICATION_JSON).content(rawInput);
 
-	@Test
-	public void able_To_Dispatch_Resource_Not_Found_Exception_When_Patching()
-			throws Exception {
+        // When & Then
+        ResultActions resultActions = this.mockMvc.perform(requestBuilder);
 
-		// Given
-		String uri = Mappings.API_V1_CUSTOMERS + "/" + id;
-		Customer customer = new Customer();
-		customer.setId(this.id);
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        resultActions.andExpect(status().isOk()).andExpect(jsonPath("$.firstname", is(firstname))).andExpect(jsonPath("$.lastname", is(lastname))).andExpect(jsonPath("$.customerUrl", is(this.idUri)));
 
-		String rawInput = ObjectToJsonMapper.toJson(input);
+    }// able_To_Handle_Put_Of_Existing_Customer()
 
-		when(this.customerService.patchCustomer(this.id, input))
-				.thenThrow(ResourceNotFoundException.class);
+    @Test
+    public void able_To_Dispatch_Resource_Not_Found_Exception_When_Patching() throws Exception {
 
-		MockHttpServletRequestBuilder requestBuilder =
-				MockMvcRequestBuilders.patch(this.idUri)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(rawInput);
+        // Given
+        String uri = Mappings.API_V1_CUSTOMERS + "/" + id;
+        Customer customer = new Customer();
+        customer.setId(this.id);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
-		// When & Then
-		this.mockMvc.perform(requestBuilder)
-				.andExpect(status().isNotFound());
-	}
+        String rawInput = ObjectToJsonMapper.toJson(input);
 
-	@Test
-	public void able_To_Handle_Delete() throws Exception {
+        when(this.customerService.patchCustomer(this.id, input)).thenThrow(ResourceNotFoundException.class);
 
-		// Given
-		Long id = this.random.nextLong();
-		String uriStr = getUriStr(id);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.patch(this.idUri).contentType(MediaType.APPLICATION_JSON).content(rawInput);
 
-		// When
-		MockHttpServletRequestBuilder requestBuilder =
-				MockMvcRequestBuilders.delete(uriStr);
+        // When & Then
+        this.mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
+    }
 
-		ResultActions requestActions = this.mockMvc.perform(requestBuilder);
+    @Test
+    public void able_To_Handle_Delete() throws Exception {
 
-		requestActions.andExpect(status().isOk());
-	}
+        // Given
+        Long id = this.random.nextLong();
+        String uriStr = getUriStr(id);
 
-	private String getUriStr(Long id) {
-		return UriComponentsBuilder.newInstance()
-				.path(Mappings.API_V1_CUSTOMERS)
-				.path("/")
-				.path(Long.toString(id))
-				.toUriString();
-	}
+        // When
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(uriStr);
+
+        ResultActions requestActions = this.mockMvc.perform(requestBuilder);
+
+        requestActions.andExpect(status().isOk());
+    }
+
+    private String getUriStr(Long id) {
+        return UriComponentsBuilder.newInstance().path(Mappings.API_V1_CUSTOMERS).path("/").path(Long.toString(id)).toUriString();
+    }
 
 }///:~

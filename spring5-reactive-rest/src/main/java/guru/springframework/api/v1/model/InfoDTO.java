@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class InfoDTO {
 
-	private String name;
-	private String type;
+    private String name;
+    private String type;
 
 }///:~

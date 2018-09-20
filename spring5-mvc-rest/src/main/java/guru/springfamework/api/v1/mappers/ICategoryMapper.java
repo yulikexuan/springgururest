@@ -13,18 +13,15 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface ICategoryMapper {
 
-	ICategoryMapper INSTANCE = Mappers.getMapper(ICategoryMapper.class);
+    ICategoryMapper INSTANCE = Mappers.getMapper(ICategoryMapper.class);
 
-	default CategoryDTO toCategoryDTO(Category category) {
+    default CategoryDTO toCategoryDTO(Category category) {
 
-		if (category == null) {
-			return null;
-		}
+        if (category == null) {
+            return null;
+        }
 
-		return CategoryDTO.CategoryDTOBuilder.getInstance()
-				.setId(category.getId())
-				.setName(category.getName())
-				.createCategoryDTO();
-	}
+        return CategoryDTO.CategoryDTOBuilder.getInstance().setId(category.getId()).setName(category.getName()).createCategoryDTO();
+    }
 
 }///:~

@@ -18,30 +18,29 @@ import java.util.List;
 @RequestMapping(Mappings.API_V1_CATEGORIES)
 public class CategoryController {
 
-	private final ICategoryService categoryService;
+    private final ICategoryService categoryService;
 
-	public CategoryController(ICategoryService categoryService) {
-		this.categoryService = categoryService;
-	}
+    public CategoryController(ICategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
-	@GetMapping
-	@ResponseStatus(HttpStatus.OK)
-	public CategoryListDTO getAllCategories() {
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryListDTO getAllCategories() {
 
-		List<CategoryDTO> categories = this.categoryService.getAllCategories();
+        List<CategoryDTO> categories = this.categoryService.getAllCategories();
 
-		CategoryListDTO categoryListDTO = new CategoryListDTO(categories);
+        CategoryListDTO categoryListDTO = new CategoryListDTO(categories);
 
-		return categoryListDTO;
-	}
+        return categoryListDTO;
+    }
 
-	@GetMapping("/{name}")
-	@ResponseStatus(HttpStatus.OK)
-	public CategoryDTO getCategoryByName(
-			@PathVariable String name) {
+    @GetMapping("/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDTO getCategoryByName(@PathVariable String name) {
 
-		CategoryDTO category = this.categoryService.getCategoryByName(name);
-		return category;
-	}
+        CategoryDTO category = this.categoryService.getCategoryByName(name);
+        return category;
+    }
 
 }///:~

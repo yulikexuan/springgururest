@@ -25,66 +25,64 @@ import static org.mockito.Mockito.when;
 
 public class CategoryServiceTest {
 
-	static final Long ID = 1L;
-	static final String NAME = "Jimmy";
+    static final Long ID = 1L;
+    static final String NAME = "Jimmy";
 
-	@Mock
-	private ICategoryRepository categoryRepository;
+    @Mock
+    private ICategoryRepository categoryRepository;
 
-	private ICategoryMapper categoryMapper = ICategoryMapper.INSTANCE;
+    private ICategoryMapper categoryMapper = ICategoryMapper.INSTANCE;
 
-	private CategoryService categoryService;
+    private CategoryService categoryService;
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		this.categoryService = new CategoryService(this.categoryRepository,
-				this.categoryMapper);
-	}
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        this.categoryService = new CategoryService(this.categoryRepository, this.categoryMapper);
+    }
 
-	@Test
-	public void getAllCategories() {
+    @Test
+    public void getAllCategories() {
 
-		// Given
-		List<Category> categories = Arrays.asList(new Category(),
-				new Category(), new Category());
+        // Given
+        List<Category> categories = Arrays.asList(new Category(), new Category(), new Category());
 
-		when(this.categoryRepository.findAll()).thenReturn(categories);
+        when(this.categoryRepository.findAll()).thenReturn(categories);
 
-		// When
-		List<CategoryDTO> result = this.categoryService.getAllCategories();
+        // When
+        List<CategoryDTO> result = this.categoryService.getAllCategories();
 
-		// Then
-		assertThat(result.size(), is(3));
-	}
+        // Then
+        assertThat(result.size(), is(3));
+    }
 
-	@Test
-	public void getCategoryByName() {
+    @Test
+    public void getCategoryByName() {
 
-		// Given
-		Category category = new Category();
-		category.setId(ID);
-		category.setName(NAME);
+        // Given
+        Category category = new Category();
+        category.setId(ID);
+        category.setName(NAME);
 
-		when(this.categoryRepository.findByName(NAME)).thenReturn(category);
+        when(this.categoryRepository.findByName(NAME)).thenReturn(category);
 
-		// When
-		CategoryDTO result = this.categoryService.getCategoryByName(NAME);
+        // When
+        CategoryDTO result = this.categoryService.getCategoryByName(NAME);
 
-		// Then
-		assertThat(result.getId(), is(ID));
-		assertThat(result.getName(), is(NAME));
-	}
+        // Then
+        assertThat(result.getId(), is(ID));
+        assertThat(result.getName(), is(NAME));
+    }
 
 
-	@Test(expected = ResourceNotFoundException.class)
-	public void able_To_Generate_Resource_Not_Found_Exception_Not_Found() {
+    @Test(expected = ResourceNotFoundException.class)
+    public void able_To_Generate_Resource_Not_Found_Exception_Not_Found() {
 
-		// Given
-		when(this.categoryRepository.findByName(NAME)).thenReturn(null);
+        // Given
+        when(this.categoryRepository.findByName(NAME)).thenReturn(null);
 
-		// When
-		this.categoryService.getCategoryByName(NAME);
-	}
+        // When
+        this.categoryService.getCategoryByName(NAME);
+    }
 
 }///:~

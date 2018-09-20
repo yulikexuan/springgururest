@@ -17,34 +17,30 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryService implements ICategoryService {
 
-	private final ICategoryRepository categoryRepository;
-	private final ICategoryMapper categoryMapper;
+    private final ICategoryRepository categoryRepository;
+    private final ICategoryMapper categoryMapper;
 
-	public CategoryService(ICategoryRepository categoryRepository,
-	                       ICategoryMapper categoryMapper) {
-		this.categoryRepository = categoryRepository;
-		this.categoryMapper = categoryMapper;
-	}
+    public CategoryService(ICategoryRepository categoryRepository, ICategoryMapper categoryMapper) {
+        this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
+    }
 
-	@Override
-	public List<CategoryDTO> getAllCategories() {
-		List<Category> categories = this.categoryRepository.findAll();
-		return categories.stream()
-				.map(this.categoryMapper::toCategoryDTO)
-				.collect(Collectors.toList());
-	}
+    @Override
+    public List<CategoryDTO> getAllCategories() {
+        List<Category> categories = this.categoryRepository.findAll();
+        return categories.stream().map(this.categoryMapper::toCategoryDTO).collect(Collectors.toList());
+    }
 
-	@Override
-	public CategoryDTO getCategoryByName(String name) {
+    @Override
+    public CategoryDTO getCategoryByName(String name) {
 
-		Category category = this.categoryRepository.findByName(name);
+        Category category = this.categoryRepository.findByName(name);
 
-		if (category == null) {
-			throw new ResourceNotFoundException(name +
-					" category was not found.");
-		}
+        if (category == null) {
+            throw new ResourceNotFoundException(name + " category was not found.");
+        }
 
-		return this.categoryMapper.toCategoryDTO(category);
-	}
+        return this.categoryMapper.toCategoryDTO(category);
+    }
 
 }///:~

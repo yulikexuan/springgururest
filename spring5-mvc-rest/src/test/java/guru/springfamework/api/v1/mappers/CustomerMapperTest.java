@@ -20,47 +20,43 @@ import static org.junit.Assert.*;
 
 public class CustomerMapperTest {
 
-	class CustomerMapper implements ICustomerMapper {
-		@Override
-		public Customer toCustomer(CustomerDTO customerDTO) {
-			return null;
-		}
-	}
+    class CustomerMapper implements ICustomerMapper {
+        @Override
+        public Customer toCustomer(CustomerDTO customerDTO) {
+            return null;
+        }
+    }
 
-	private ICustomerMapper customerMapper;
+    private ICustomerMapper customerMapper;
 
-	private Random random;
+    private Random random;
 
-	@Before
-	public void setUp() {
-		this.customerMapper = new CustomerMapper();
-		this.random = new Random(System.currentTimeMillis());
-	}
+    @Before
+    public void setUp() {
+        this.customerMapper = new CustomerMapper();
+        this.random = new Random(System.currentTimeMillis());
+    }
 
-	@Test
-	public void toCustomerDTO() {
+    @Test
+    public void toCustomerDTO() {
 
-		// Given
-		Long id = this.random.nextLong();
-		String firstname = UUID.randomUUID().toString();
-		String lastname = UUID.randomUUID().toString();
+        // Given
+        Long id = this.random.nextLong();
+        String firstname = UUID.randomUUID().toString();
+        String lastname = UUID.randomUUID().toString();
 
-		Customer customer = new Customer();
-		customer.setId(id);
-		customer.setFirstname(firstname);
-		customer.setLastname(lastname);
+        Customer customer = new Customer();
+        customer.setId(id);
+        customer.setFirstname(firstname);
+        customer.setLastname(lastname);
 
-		String uriStr = UriComponentsBuilder.newInstance()
-				.path(Mappings.API_V1_CUSTOMERS)
-				.path("/")
-				.path(Long.toString(id))
-				.toUriString();
+        String uriStr = UriComponentsBuilder.newInstance().path(Mappings.API_V1_CUSTOMERS).path("/").path(Long.toString(id)).toUriString();
 
-		// When
-		CustomerDTO dto = this.customerMapper.toCustomerDTO(customer);
+        // When
+        CustomerDTO dto = this.customerMapper.toCustomerDTO(customer);
 
-		// Then
-		assertThat(dto.getCustomerUrl(), is(uriStr));
-	}
+        // Then
+        assertThat(dto.getCustomerUrl(), is(uriStr));
+    }
 
 }///:~

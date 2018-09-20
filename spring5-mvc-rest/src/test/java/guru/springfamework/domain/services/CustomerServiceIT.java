@@ -31,99 +31,95 @@ import static org.junit.Assert.*;
 @DataJpaTest
 public class CustomerServiceIT {
 
-	@Autowired
-	private ICustomerRepository customerRepository;
+    @Autowired
+    private ICustomerRepository customerRepository;
 
-	@Autowired
-	private ICategoryRepository categoryRepository;
+    @Autowired
+    private ICategoryRepository categoryRepository;
 
-	@Autowired
-	private IVendorRepository vendorRepository;
+    @Autowired
+    private IVendorRepository vendorRepository;
 
-	private CustomerService customerService;
-	private ICustomerMapper customerMapper;
+    private CustomerService customerService;
+    private ICustomerMapper customerMapper;
 
-	@Before
-	public void setUp() {
+    @Before
+    public void setUp() {
 
-		log.debug(">>>>>>> Customer data size: " +
-				this.customerRepository.findAll().size());
-		log.debug(">>>>>>> Loading customer data for testing ... ... ");
+        log.debug(">>>>>>> Customer data size: " + this.customerRepository.findAll().size());
+        log.debug(">>>>>>> Loading customer data for testing ... ... ");
 
-		new Bootstrap(this.categoryRepository, this.customerRepository,
-				this.vendorRepository).run();
+        new Bootstrap(this.categoryRepository, this.customerRepository, this.vendorRepository).run();
 
-		log.debug(">>>>>>> Customer data size after loading data: " +
-				this.customerRepository.findAll().size());
+        log.debug(">>>>>>> Customer data size after loading data: " + this.customerRepository.findAll().size());
 
-		this.customerMapper = ICustomerMapper.INSTANCE;
-		this.customerService = new CustomerService(this.customerRepository,
-				this.customerMapper);
-	}
+        this.customerMapper = ICustomerMapper.INSTANCE;
+        this.customerService = new CustomerService(this.customerRepository, this.customerMapper);
+    }
 
-	private Long get_ID_Of_The_First_Customer_In_Cuatomer_Repository() {
-		return this.customerRepository.findAll().get(0).getId();
-	}
+    private Long get_ID_Of_The_First_Customer_In_Cuatomer_Repository() {
+        return this.customerRepository.findAll().get(0).getId();
+    }
 
-	@Test
-	public void is_Able_To_Patch_First_Name() {
+    @Test
+    public void is_Able_To_Patch_First_Name() {
 
-		// Given
-		String newFirstname = UUID.randomUUID().toString();
-		Long id = this.get_ID_Of_The_First_Customer_In_Cuatomer_Repository();
+        // Given
+        String newFirstname = UUID.randomUUID().toString();
+        Long id = this.get_ID_Of_The_First_Customer_In_Cuatomer_Repository();
 
-		Customer origin = this.customerRepository.getOne(id);
-		String originLastname = origin.getLastname();
+        Customer origin = this.customerRepository.getOne(id);
+        String originLastname = origin.getLastname();
 
-		Customer customer = new Customer();
-		customer.setId(id);
-		customer.setFirstname(newFirstname);
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        Customer customer = new Customer();
+        customer.setId(id);
+        customer.setFirstname(newFirstname);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
-		// When
-		CustomerDTO output = this.customerService.patchCustomer(id, input);
+        // When
+        CustomerDTO output = this.customerService.patchCustomer(id, input);
 
-		// Then
-		assertThat(output.getCustomerUrl(), containsString("/" + id));
-		assertThat(output.getFirstname(), is(customer.getFirstname()));
-		assertThat(output.getLastname(), is(originLastname));
-	}
+        // Then
+        assertThat(output.getCustomerUrl(), containsString("/" + id));
+        assertThat(output.getFirstname(), is(customer.getFirstname()));
+        assertThat(output.getLastname(), is(originLastname));
+    }
 
-	@Test
-	public void is_Able_To_Patch_Last_Name() {
+    @Test
+    public void is_Able_To_Patch_Last_Name() {
 
-		// Given
-		String newLastname = UUID.randomUUID().toString();
-		Long id = this.get_ID_Of_The_First_Customer_In_Cuatomer_Repository();
-		Customer origin = this.customerRepository.getOne(id);
-		String originFirstname = origin.getFirstname();
+        // Given
+        String newLastname = UUID.randomUUID().toString();
+        Long id = this.get_ID_Of_The_First_Customer_In_Cuatomer_Repository();
+        Customer origin = this.customerRepository.getOne(id);
+        String originFirstname = origin.getFirstname();
 
-		Customer customer = new Customer();
-		customer.setId(id);
-		customer.setLastname(newLastname);
-		CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
+        Customer customer = new Customer();
+        customer.setId(id);
+        customer.setLastname(newLastname);
+        CustomerDTO input = this.customerMapper.toCustomerDTO(customer);
 
-		// When
-		CustomerDTO output = this.customerService.patchCustomer(id, input);
+        // When
+        CustomerDTO output = this.customerService.patchCustomer(id, input);
 
-		// Then
-		assertThat(output.getCustomerUrl(), containsString("/" + id));
-		assertThat(output.getFirstname(), is(originFirstname));
-		assertThat(output.getLastname(), is(input.getLastname()));
-	}
+        // Then
+        assertThat(output.getCustomerUrl(), containsString("/" + id));
+        assertThat(output.getFirstname(), is(originFirstname));
+        assertThat(output.getLastname(), is(input.getLastname()));
+    }
 
-	@Test
-	public void able_To_Delete_Customer_By_Id() {
+    @Test
+    public void able_To_Delete_Customer_By_Id() {
 
-		// Given
-		Long id = this.get_ID_Of_The_First_Customer_In_Cuatomer_Repository();
+        // Given
+        Long id = this.get_ID_Of_The_First_Customer_In_Cuatomer_Repository();
 
-		// When
-		this.customerService.deleteCustomer(id);
+        // When
+        this.customerService.deleteCustomer(id);
 
-		// Then
-		boolean deleted = !this.customerRepository.existsById(id);
-		assertThat(deleted, is(true));
-	}
+        // Then
+        boolean deleted = !this.customerRepository.existsById(id);
+        assertThat(deleted, is(true));
+    }
 
 }///:~

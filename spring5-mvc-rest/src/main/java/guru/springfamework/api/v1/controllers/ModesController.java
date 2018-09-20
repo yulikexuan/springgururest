@@ -19,13 +19,13 @@ import java.util.List;
 @RequestMapping(Mappings.API_V1_MODES)
 public class ModesController {
 
-	public ModesController() {
-	}
+    public ModesController() {
+    }
 
-	@GetMapping
-	@ResponseStatus(HttpStatus.OK)
-	public ModesDTO getModes() {
-		return new ModesDTO();
-	}
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ModesDTO getModes() {
+        return new ModesDTO();
+    }
 
 }///:~

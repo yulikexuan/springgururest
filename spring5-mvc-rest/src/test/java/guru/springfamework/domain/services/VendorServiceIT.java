@@ -31,75 +31,71 @@ import static org.junit.Assert.assertThat;
 @DataJpaTest
 public class VendorServiceIT {
 
-	@Autowired
-	private ICustomerRepository customerRepository;
+    @Autowired
+    private ICustomerRepository customerRepository;
 
-	@Autowired
-	private ICategoryRepository categoryRepository;
+    @Autowired
+    private ICategoryRepository categoryRepository;
 
-	@Autowired
-	private IVendorRepository vendorRepository;
+    @Autowired
+    private IVendorRepository vendorRepository;
 
-	private VendorService vendorService;
-	private IVendorMapper vendorMapper;
+    private VendorService vendorService;
+    private IVendorMapper vendorMapper;
 
-	@Before
-	public void setUp() {
+    @Before
+    public void setUp() {
 
-		log.debug(">>>>>>> Vendor data size: " +
-				this.vendorRepository.findAll().size());
-		log.debug(">>>>>>> Loading vendor data for testing ... ... ");
+        log.debug(">>>>>>> Vendor data size: " + this.vendorRepository.findAll().size());
+        log.debug(">>>>>>> Loading vendor data for testing ... ... ");
 
-		new Bootstrap(this.categoryRepository, this.customerRepository,
-				this.vendorRepository).run();
+        new Bootstrap(this.categoryRepository, this.customerRepository, this.vendorRepository).run();
 
-		log.debug(">>>>>>> Vendor data size after loading data: " +
-				this.vendorRepository.findAll().size());
+        log.debug(">>>>>>> Vendor data size after loading data: " + this.vendorRepository.findAll().size());
 
-		this.vendorMapper = IVendorMapper.INSTANCE;
-		this.vendorService = new VendorService(this.vendorRepository,
-				this.vendorMapper);
-	}
+        this.vendorMapper = IVendorMapper.INSTANCE;
+        this.vendorService = new VendorService(this.vendorRepository, this.vendorMapper);
+    }
 
-	private Long get_ID_Of_The_First_Vendor_In_Vendor_Repository() {
-		return this.vendorRepository.findAll().get(0).getId();
-	}
+    private Long get_ID_Of_The_First_Vendor_In_Vendor_Repository() {
+        return this.vendorRepository.findAll().get(0).getId();
+    }
 
-	@Test
-	public void is_Able_To_Patch_Vendor_Name() {
+    @Test
+    public void is_Able_To_Patch_Vendor_Name() {
 
-		// Given
-		String newVendorName = UUID.randomUUID().toString();
-		Long id = this.get_ID_Of_The_First_Vendor_In_Vendor_Repository();
+        // Given
+        String newVendorName = UUID.randomUUID().toString();
+        Long id = this.get_ID_Of_The_First_Vendor_In_Vendor_Repository();
 
-		Vendor origin = this.vendorRepository.getOne(id);
-		String originVendorName = origin.getName();
+        Vendor origin = this.vendorRepository.getOne(id);
+        String originVendorName = origin.getName();
 
-		Vendor vendor = new Vendor();
-		vendor.setId(id);
-		vendor.setName(newVendorName);
-		VendorDTO input = this.vendorMapper.toVendorDTO(vendor);
+        Vendor vendor = new Vendor();
+        vendor.setId(id);
+        vendor.setName(newVendorName);
+        VendorDTO input = this.vendorMapper.toVendorDTO(vendor);
 
-		// When
-		VendorDTO output = this.vendorService.patchVendor(id, input);
+        // When
+        VendorDTO output = this.vendorService.patchVendor(id, input);
 
-		// Then
-		assertThat(output.getVendorUrl(), containsString("/" + id));
-		assertThat(output.getName(), is(vendor.getName()));
-	}
+        // Then
+        assertThat(output.getVendorUrl(), containsString("/" + id));
+        assertThat(output.getName(), is(vendor.getName()));
+    }
 
-	@Test
-	public void able_To_Delete_Customer_By_Id() {
+    @Test
+    public void able_To_Delete_Customer_By_Id() {
 
-		// Given
-		Long id = this.get_ID_Of_The_First_Vendor_In_Vendor_Repository();
+        // Given
+        Long id = this.get_ID_Of_The_First_Vendor_In_Vendor_Repository();
 
-		// When
-		this.vendorService.deleteVendor(id);
+        // When
+        this.vendorService.deleteVendor(id);
 
-		// Then
-		boolean deleted = !this.vendorRepository.existsById(id);
-		assertThat(deleted, is(true));
-	}
+        // Then
+        boolean deleted = !this.vendorRepository.existsById(id);
+        assertThat(deleted, is(true));
+    }
 
 }///:~

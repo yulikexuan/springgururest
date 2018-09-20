@@ -66,100 +66,84 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = {VendorController.class})
 public class VendorControllerIT {
 
-	/*
-	 * @MockBean is an annotation that can be used to add mocks to a Spring
-	 * ApplicationContext
-	 *
-	 * This annotation is going to tell Mockito and Spring to create a Mackito
-	 * Mock and inject it into our test here
-	 *
-	 * So rather than doing the init-mocks, we are asking the Spring Contest to
-	 * create that Mock for us and inject it into our class
-	 *   - Can be used as a class level annotation or on fields in either
-	 *     @Configuration classes, or test classes that are @RunWith the
-	 *     SpringRunner
-	 *   - Mocks can be registered by type or by bean name
-	 *   - Any existing single bean of the same type defined in the context
-	 *     will be replaced by the mock
-	 *   - If no existing bean is defined a new one will be added
-	 *   - When @MockBean is used on a field, as well as being registered in
-	 *     the application context, the mock will also be injected into the
-	 *     field
-	 */
-	@MockBean
-	private IVendorService vendorService;
+    /*
+     * @MockBean is an annotation that can be used to add mocks to a Spring
+     * ApplicationContext
+     *
+     * This annotation is going to tell Mockito and Spring to create a Mackito
+     * Mock and inject it into our test here
+     *
+     * So rather than doing the init-mocks, we are asking the Spring Contest to
+     * create that Mock for us and inject it into our class
+     *   - Can be used as a class level annotation or on fields in either
+     *     @Configuration classes, or test classes that are @RunWith the
+     *     SpringRunner
+     *   - Mocks can be registered by type or by bean name
+     *   - Any existing single bean of the same type defined in the context
+     *     will be replaced by the mock
+     *   - If no existing bean is defined a new one will be added
+     *   - When @MockBean is used on a field, as well as being registered in
+     *     the application context, the mock will also be injected into the
+     *     field
+     */
+    @MockBean
+    private IVendorService vendorService;
 
-	/*
-	 * Specifing that want the vendor controller class to be brought in and
-	 * wired up
-	 */
-	@Autowired
-	private MockMvc mockMvc;
+    /*
+     * Specifing that want the vendor controller class to be brought in and
+     * wired up
+     */
+    @Autowired
+    private MockMvc mockMvc;
 
-	private VendorDTO vendorDTO_0;
-	private VendorDTO vendorDTO_1;
+    private VendorDTO vendorDTO_0;
+    private VendorDTO vendorDTO_1;
 
-	private String url_1 = Mappings.API_V1_VENDORS + "/1";
-	private String url_2 = Mappings.API_V1_VENDORS + "/2";
+    private String url_1 = Mappings.API_V1_VENDORS + "/1";
+    private String url_2 = Mappings.API_V1_VENDORS + "/2";
 
-	@Before
-	public void setUp() throws Exception {
-		this.vendorDTO_0 = VendorDTO.VendorDTOBuilder.getInstance()
-				.setName(UUID.randomUUID().toString())
-				.setVendorUrl(url_1)
-				.createVendorDTO();
-		this.vendorDTO_1 = VendorDTO.VendorDTOBuilder.getInstance()
-				.setName(UUID.randomUUID().toString())
-				.setVendorUrl(url_2)
-				.createVendorDTO();
-	}
+    @Before
+    public void setUp() throws Exception {
+        this.vendorDTO_0 = VendorDTO.VendorDTOBuilder.getInstance().setName(UUID.randomUUID().toString()).setVendorUrl(url_1).createVendorDTO();
+        this.vendorDTO_1 = VendorDTO.VendorDTOBuilder.getInstance().setName(UUID.randomUUID().toString()).setVendorUrl(url_2).createVendorDTO();
+    }
 
-	@Test
-	public void able_To_Get_All_Vendors() throws Exception {
+    @Test
+    public void able_To_Get_All_Vendors() throws Exception {
 
-		// Given
-		VendorListDTO vendorListDTO = new VendorListDTO(Arrays.asList(
-				this.vendorDTO_0, this.vendorDTO_1));
+        // Given
+        VendorListDTO vendorListDTO = new VendorListDTO(Arrays.asList(this.vendorDTO_0, this.vendorDTO_1));
 
-		given(this.vendorService.getAllVendors()).willReturn(
-				vendorListDTO.getVendors());
+        given(this.vendorService.getAllVendors()).willReturn(vendorListDTO.getVendors());
 
-		// When & Then
-		this.mockMvc.perform(get(Mappings.API_V1_VENDORS)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.vendors", hasSize(2)));
-	}
+        // When & Then
+        this.mockMvc.perform(get(Mappings.API_V1_VENDORS).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.vendors", hasSize(2)));
+    }
 
-	@Test
-	public void getVendorById() throws Exception {
+    @Test
+    public void getVendorById() throws Exception {
 
-		// Given
-		given(this.vendorService.getVendorById(anyLong()))
-				.willReturn(this.vendorDTO_0);
+        // Given
+        given(this.vendorService.getVendorById(anyLong())).willReturn(this.vendorDTO_0);
 
-		// When & Then
-		this.mockMvc.perform(get(url_1)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.name",
-						Matchers.is(this.vendorDTO_0.getName())));
-	}
+        // When & Then
+        this.mockMvc.perform(get(url_1).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.name", Matchers.is(this.vendorDTO_0.getName())));
+    }
 
-	@Test
-	public void createNewVendor() throws Exception {
-	}
+    @Test
+    public void createNewVendor() throws Exception {
+    }
 
-	@Test
-	public void updateVendor() throws Exception {
-	}
+    @Test
+    public void updateVendor() throws Exception {
+    }
 
-	@Test
-	public void patchVendor() throws Exception {
-	}
+    @Test
+    public void patchVendor() throws Exception {
+    }
 
-	@Test
-	public void deleteVendor() throws Exception {
-	}
+    @Test
+    public void deleteVendor() throws Exception {
+    }
 
 }///:~
